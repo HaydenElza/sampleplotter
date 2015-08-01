@@ -11,7 +11,7 @@ except:
 import os, sys, gdalconst, numpy
 
 # User variables
-study_area_path = "E:/Hayden_Elza/plots/extent.shp"
+study_area_path = "E:/Hayden_Elza/plots/test_data/extent.shp"
 n = 1000
 output_dir = "E:/Hayden_Elza/plots/output"
 
