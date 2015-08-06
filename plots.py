@@ -16,18 +16,41 @@ study_area_path = "E:/Hayden_Elza/plots/test_data/irregular_shape.shp"
 n = 1000
 output_dir = "E:/Hayden_Elza/plots/output"
 check_topology = False
+rotation = float("45")
 
+def rotate(p0_x,p0_y,f_x,f_y,rotation):
+	rotation = rotation*numpy.pi/180  # Convert degrees to radians
+	a0 = p0_x-f_x
+	b0 = p0_y-f_y
+	a1 = a0*numpy.cos(rotation)-b0*numpy.sin(rotation)
+	b1 = a0*numpy.sin(rotation)+b0*numpy.cos(rotation)
+	p1_x = a1+f_x
+	p1_y = b1+f_y
+	p1_x,p1_y = wrap(p1_x,p1_y)
+	return p1_x,p1_y
 
-def rotate(f_x,f_y,p0_x,p0_y,rotation):
-	return
+def wrap(x,y):
+	if x < extent[0]: x = extent[1]-(extent[0]-x)
+	if x > extent[1]: x = extent[0]+(x-extent[1])
+	if y < extent[2]: y = extent[3]-(extent[2]-y)
+	if y > extent[3]: y = extent[2]+(y-extent[3])
+	return x,y
 
+def write_point(x,y,x_start,y_start,rotation):
+	if rotation != 0:
+		x,y = rotate(x,y,x_start,y_start,rotation)
 
-def write_point(x,y):
-	point.AddPoint(x,y)  # Add geometry
-	# Create pls_prime geometry and fields
-	plots_feature = ogr.Feature(plots_def)  # Create empty feature
-	plots_feature.SetGeometry(point)  # Create geometry
-	plots.CreateFeature(plots_feature)  # Add feature to layer
+	if check_topology:
+		if point_in_poly(x,y):
+			point.AddPoint(x,y)  # Add geometry
+			plots_feature = ogr.Feature(plots_def)  # Create empty feature
+			plots_feature.SetGeometry(point)  # Create geometry
+			plots.CreateFeature(plots_feature)  # Add feature to layer
+	else:
+		point.AddPoint(x,y)  # Add geometry
+		plots_feature = ogr.Feature(plots_def)  # Create empty feature
+		plots_feature.SetGeometry(point)  # Create geometry
+		plots.CreateFeature(plots_feature)  # Add feature to layer
 
 def point_in_poly(x,y):
 	point = ogr.Geometry(ogr.wkbPoint)  # Create empty point
@@ -62,9 +85,7 @@ def systematic_grid():
 		x = x_start + (u*d)
 		for v in range(0,n_y):
 			y = y_start + (v*d)
-			if check_topology:
-				if point_in_poly(x,y): write_point(x,y)
-			else: write_point(x,y)
+			write_point(x,y,x_start,y_start,rotation)
 
 def equidistant():
 	# Calculate variables
