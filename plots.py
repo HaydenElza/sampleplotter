@@ -11,11 +11,15 @@ except:
 import os, sys, gdalconst, numpy
 
 # User variables
-study_area_path = "E:/Hayden_Elza/plots/test_data/extent.shp"
+sample_type = "systematic_grid"
+study_area_path = "E:/Hayden_Elza/plots/test_data/irregular_shape.shp"
 n = 1000
 output_dir = "E:/Hayden_Elza/plots/output"
+check_topology = False
 
 
+def rotate(f_x,f_y,p0_x,p0_y,rotation):
+	return
 
 
 def write_point(x,y):
@@ -25,7 +29,7 @@ def write_point(x,y):
 	plots_feature.SetGeometry(point)  # Create geometry
 	plots.CreateFeature(plots_feature)  # Add feature to layer
 
-def point_in_poly(x,y,poly):
+def point_in_poly(x,y):
 	point = ogr.Geometry(ogr.wkbPoint)  # Create empty point
 	point.AddPoint(x,y)
 	cross = poly.Intersects(point)
@@ -35,12 +39,13 @@ def random_sample():
 	for i in range(0,n):
 		x = numpy.random.uniform(min(extent[0],extent[1]),max(extent[0],extent[1]))
 		y = numpy.random.uniform(min(extent[2],extent[3]),max(extent[2],extent[3]))
-		point.AddPoint(x,y)  # Add geometry
+		if check_topology:
+			while not point_in_poly(x,y):
+				x = numpy.random.uniform(min(extent[0],extent[1]),max(extent[0],extent[1]))
+				y = numpy.random.uniform(min(extent[2],extent[3]),max(extent[2],extent[3]))
+			write_point(x,y)
+		else: write_point(x,y)
 
-		# Create pls_prime geometry and fields
-		plots_feature = ogr.Feature(plots_def)  # Create empty feature
-		plots_feature.SetGeometry(point)  # Create geometry
-		plots.CreateFeature(plots_feature)  # Add feature to layer
 
 def systematic_grid():
 	# Calculate variables
@@ -57,7 +62,9 @@ def systematic_grid():
 		x = x_start + (u*d)
 		for v in range(0,n_y):
 			y = y_start + (v*d)
-			if point_in_poly(x,y,): write_point(x,y)
+			if check_topology:
+				if point_in_poly(x,y): write_point(x,y)
+			else: write_point(x,y)
 
 def equidistant():
 	# Calculate variables
@@ -76,11 +83,15 @@ def equidistant():
 		if v%2==0:
 			for u in range(0,n_x):
 				x = x_start + (u*d)
-				write_point(x,y)
+				if check_topology:
+					if point_in_poly(x,y): write_point(x,y)
+				else: write_point(x,y)
 		else:
 			for u in range(0,n_x):
 				x = x_start + ((u)*d) + (d/2)
-				write_point(x,y)
+				if check_topology:
+					if point_in_poly(x,y): write_point(x,y)
+				else: write_point(x,y)
 
 #----------------------------------------------------
 # Main
@@ -115,6 +126,8 @@ study_area_layer = study_area.GetLayer(0)
 
 # Get fist feature
 study_area_feature = study_area_layer.GetFeature(0)
+
+poly = study_area_feature.GetGeometryRef()
 
 # Feature count
 feature_count1 = study_area_layer.GetFeatureCount()
@@ -154,8 +167,13 @@ plots_def = plots.GetLayerDefn() # Every feature in layer will have this
 # Create point geometry
 point = ogr.Geometry(ogr.wkbPoint)
 
-equidistant()
+# Adjust n for topology check
+if (check_topology and sample_type != "random_sample"): n = int(n*(abs(extent[0]-extent[1])*abs(extent[2]-extent[3]))/poly.GetArea())
 
+if sample_type == "random_sample": random_sample()
+elif sample_type == "systematic_grid": systematic_grid()
+elif sample_type == "equidistant": equidistant()
+else: print "Sample type '"+sample_type+"' not recognized."
 
 
 # Free Memory
