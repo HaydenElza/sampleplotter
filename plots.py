@@ -26,7 +26,7 @@ def rotate(p0_x,p0_y,f_x,f_y,rotation):
 	b1 = a0*numpy.sin(rotation)+b0*numpy.cos(rotation)
 	p1_x = a1+f_x
 	p1_y = b1+f_y
-	p1_x,p1_y = wrap(p1_x,p1_y)
+	#p1_x,p1_y = wrap(p1_x,p1_y)
 	return p1_x,p1_y
 
 def wrap(x,y):
@@ -85,7 +85,7 @@ def systematic_grid():
 		x = x_start + (u*d)
 		for v in range(0,n_y):
 			y = y_start + (v*d)
-			write_point(x,y,x_start,y_start,rotation)
+			write_point(x,y,(extent[0]+extent[1])/2,(extent[2]+extent[3])/2,rotation)
 
 def equidistant():
 	# Calculate variables
