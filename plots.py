@@ -11,15 +11,17 @@ except:
 import os, sys, gdalconst, numpy
 
 # User variables
-sample_type = "systematic_grid"
+sample_type = "random_sample"
 study_area_path = "E:/Hayden_Elza/plots/test_data/irregular_shape.shp"
 n = 1000
 output_dir = "E:/Hayden_Elza/plots/output"
-check_topology = False
-rotation = float("45")
+check_topology = True
+rotation = float("-15")
 
-def rotate(p0_x,p0_y,f_x,f_y,rotation):
+def rotate(p0_x,p0_y,rotation):
 	rotation = rotation*numpy.pi/180  # Convert degrees to radians
+	f_x = (extent[0]+extent[1])/2
+	f_y = (extent[2]+extent[3])/2
 	a0 = p0_x-f_x
 	b0 = p0_y-f_y
 	a1 = a0*numpy.cos(rotation)-b0*numpy.sin(rotation)
@@ -36,9 +38,9 @@ def wrap(x,y):
 	if y > extent[3]: y = extent[2]+(y-extent[3])
 	return x,y
 
-def write_point(x,y,x_start,y_start,rotation):
+def write_point(x,y,rotation=0):
 	if rotation != 0:
-		x,y = rotate(x,y,x_start,y_start,rotation)
+		x,y = rotate(x,y,rotation)
 
 	if check_topology:
 		if point_in_poly(x,y):
@@ -69,7 +71,6 @@ def random_sample():
 			write_point(x,y)
 		else: write_point(x,y)
 
-
 def systematic_grid():
 	# Calculate variables
 	d_x = max(extent[0],extent[1])-min(extent[0],extent[1])
@@ -85,7 +86,7 @@ def systematic_grid():
 		x = x_start + (u*d)
 		for v in range(0,n_y):
 			y = y_start + (v*d)
-			write_point(x,y,(extent[0]+extent[1])/2,(extent[2]+extent[3])/2,rotation)
+			write_point(x,y,rotation)
 
 def equidistant():
 	# Calculate variables
@@ -104,15 +105,11 @@ def equidistant():
 		if v%2==0:
 			for u in range(0,n_x):
 				x = x_start + (u*d)
-				if check_topology:
-					if point_in_poly(x,y): write_point(x,y)
-				else: write_point(x,y)
+				write_point(x,y,rotation)
 		else:
 			for u in range(0,n_x):
 				x = x_start + ((u)*d) + (d/2)
-				if check_topology:
-					if point_in_poly(x,y): write_point(x,y)
-				else: write_point(x,y)
+				write_point(x,y,rotation)
 
 #----------------------------------------------------
 # Main
@@ -190,8 +187,15 @@ point = ogr.Geometry(ogr.wkbPoint)
 
 # Adjust n for topology check
 if (check_topology and sample_type != "random_sample"): n = int(n*(abs(extent[0]-extent[1])*abs(extent[2]-extent[3]))/poly.GetArea())
+# Adjust n for rotation
+if (rotation != 0 and sample_type != "random_sample"):
+	c = numpy.sqrt(abs(extent[0]-extent[1])**2+abs(extent[2]-extent[3])**2)
+	n = int(n*(c**2)/(abs(extent[0]-extent[1])*abs(extent[2]-extent[3])))
+	extent = [extent[0]-((c-abs(extent[0]-extent[1]))/2),extent[1]+((c-abs(extent[0]-extent[1]))/2),extent[2]-((c-abs(extent[2]-extent[3]))/2),extent[3]+((c-abs(extent[2]-extent[3]))/2)]
 
-if sample_type == "random_sample": random_sample()
+if sample_type == "random_sample":
+	random_sample()
+	if rotation != 0: rotation = 0
 elif sample_type == "systematic_grid": systematic_grid()
 elif sample_type == "equidistant": equidistant()
 else: print "Sample type '"+sample_type+"' not recognized."
