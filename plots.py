@@ -8,15 +8,15 @@ except:
 		print "Import of ogr failed."
 
 # Import other needed modules
-import os, sys, gdalconst, numpy
+import os, sys, gdalconst, numpy, getopt, time, datetime
 
-# User variables
-sample_type = "random_sample"
+"""# User variables
+sample_type = "grid"
 study_area_path = "E:/Hayden_Elza/plots/test_data/irregular_shape.shp"
 n = 1000
 output_dir = "E:/Hayden_Elza/plots/output"
 check_topology = True
-rotation = float("-15")
+rotation = float("-15.5")"""
 
 def rotate(p0_x,p0_y,rotation):
 	rotation = rotation*numpy.pi/180  # Convert degrees to radians
@@ -28,15 +28,7 @@ def rotate(p0_x,p0_y,rotation):
 	b1 = a0*numpy.sin(rotation)+b0*numpy.cos(rotation)
 	p1_x = a1+f_x
 	p1_y = b1+f_y
-	#p1_x,p1_y = wrap(p1_x,p1_y)
 	return p1_x,p1_y
-
-def wrap(x,y):
-	if x < extent[0]: x = extent[1]-(extent[0]-x)
-	if x > extent[1]: x = extent[0]+(x-extent[1])
-	if y < extent[2]: y = extent[3]-(extent[2]-y)
-	if y > extent[3]: y = extent[2]+(y-extent[3])
-	return x,y
 
 def write_point(x,y,rotation=0):
 	if rotation != 0:
@@ -111,28 +103,75 @@ def equidistant():
 				x = x_start + ((u)*d) + (d/2)
 				write_point(x,y,rotation)
 
-#----------------------------------------------------
-# Main
-#----------------------------------------------------
+
+#-----------------
+# Parse arguments
+#-----------------
+# Default values
+sample_type = None
+input_path = None
+output_dir = None
+n = None
+check_topology = True
+rotation = 0
+
+try:
+	opts, args = getopt.getopt(sys.argv[1:],"hs:i:o:n:t:r:",["help","sample_type=","input_path=","output_dir=","plot_number=","check_topology","rotation"])
+except getopt.GetoptError:
+	print "plots.py -s <sampletype> -i <inputfile> -o <outputfile> -n <numberofplots> {-t <checktopology> [default:True] -r <rotationindegrees> [defualt:0]}"
+	sys.exit(2)
+for opt, arg in opts:
+	if opt in ("-h","--help"):
+		print "Options:"
+		print "    -h --help              Show this screen."
+		print "    -s --sample_type       Sample type."
+		print "                           (random_sample|systematic_grid|equidistant)"
+		print "    -i --input_path        Path to input shapefile."
+		print "    -o --output_dir        Path to output directory."
+		print "    -n --plot_number       Target number of plots to generate."
+		print "    -t --check_topology    Only create points within study area."
+		print "                           [default: True|False]"
+		print "    -r --rotation          Counter-clockwise rotation, in degrees,"
+		print "                           of point array about center of extent. [default: 0]"
+		sys.exit()
+	elif opt in ("-s","--sample_type"):
+		sample_type = arg
+	elif opt in ("-i","--input_path"):
+		input_path = arg
+	elif opt in ("-o","--output_dir"):
+		output_dir = arg
+	elif opt in ("-n","--plot_number"):
+		n = int(arg)
+	elif opt in ("-t","--check_topology"):
+		check_topology = arg[0].upper()=="T"
+	elif opt in ("-r","--rotation"):
+		rotation = float(arg)
+
+required = {"sample_type":sample_type,"input_path":input_path,"output_dir":output_dir,"n":n}
+for key, value in required.iteritems():
+	if value == None:
+		print key,"is required. Use --help for more info."
+		sys.exit(2)
+# End parse arguments--------------------------------------------------------
+
 
 # Check if output folder exists
 if not os.path.exists(output_dir):
 	os.makedirs(output_dir)
-
 
 #--------------------
 # Prepare Study Area
 #--------------------
 
 # Check if file exists
-if not os.path.isfile(study_area_path):
+if not os.path.isfile(input_path):
 	print "The specified file for the study area does not exist."
 
 # Get appropriate driver
 driver = ogr.GetDriverByName('ESRI Shapefile')
 
 # Open the file using the driver
-study_area = driver.Open(study_area_path, gdalconst.GA_ReadOnly)
+study_area = driver.Open(input_path, gdalconst.GA_ReadOnly)
 
 # Verify if the file was opened, if not exit
 if study_area is None:
@@ -156,18 +195,17 @@ if feature_count1 > 1:
 # Get extent
 extent = study_area_layer.GetExtent()
 
-
 #----------------
 # Prepare Points
 #----------------
 
 # Check if path exists
-if os.path.isfile(os.path.join(output_dir,"plots.shp")):
+if os.path.isfile(os.path.join(output_dir,datetime.datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")+".shp")):
 	print os.path.join(output_dir,"plots.shp"), "already exists. Move or rename and run again."
 	sys.exit(-1)
 
 # Create shapefile
-plots_dst = driver.CreateDataSource(os.path.join(output_dir,"plots.shp"))
+plots_dst = driver.CreateDataSource(os.path.join(output_dir,datetime.datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")+".shp"))
 plots = plots_dst.CreateLayer('foolayer',geom_type=ogr.wkbPoint)
 
 # Validate creation
@@ -177,10 +215,9 @@ if plots is None:
 
 plots_def = plots.GetLayerDefn() # Every feature in layer will have this
 
-
-#
-#
-#
+#-------
+# Other
+#-------
 
 # Create point geometry
 point = ogr.Geometry(ogr.wkbPoint)
@@ -193,6 +230,7 @@ if (rotation != 0 and sample_type != "random_sample"):
 	n = int(n*(c**2)/(abs(extent[0]-extent[1])*abs(extent[2]-extent[3])))
 	extent = [extent[0]-((c-abs(extent[0]-extent[1]))/2),extent[1]+((c-abs(extent[0]-extent[1]))/2),extent[2]-((c-abs(extent[2]-extent[3]))/2),extent[3]+((c-abs(extent[2]-extent[3]))/2)]
 
+# Choose sample method
 if sample_type == "random_sample":
 	random_sample()
 	if rotation != 0: rotation = 0
@@ -202,7 +240,12 @@ else: print "Sample type '"+sample_type+"' not recognized."
 
 
 # Free Memory
+driver = None
+study_area = None
+study_area_layer = None
+study_area_feature = None
+poly = None
 plots = None
+plots_def = None
 plots_feature = None
 point = None
-plots_def = None
