@@ -22,7 +22,7 @@ plots.py -s <sampletype> -i <inputfile> -o <outputfile> -n <numberofplots> {-t <
   	                     of point array about center of extent. [default: 0]
 ~~~
 
-### Sample Types
+### Sample Types:
 
 | **Random** | **Systematic** | **Equidistant**  |
 |---|---|---|
@@ -34,7 +34,7 @@ Random | Randomly creates the specified number of points.
 Systematic | Given a target number of points (n), a systematic grid of points is created. A between point distance (d) is calculated to get the total number of points as close to n as possible. Initial point is randomly chosen between 0 and d for both x and y axes.
 Equidistant | Given a number of points (n), a systematic triangular grid of points is created. Points are equidistant from each other. A between point distance (d) is calculated to get the total number of points as close to n as possible. Initial point is randomly chosen between 0 and d for both x and y axes.
 
-### Check Topology
+### Check Topology:
 
 If `--check_topology True`, as close to n points as possible will be created *only* within study area. Default `check_topology=True`.
 
@@ -42,7 +42,7 @@ If `--check_topology True`, as close to n points as possible will be created *on
 |---|---|---|
 ![](https://github.com/HaydenElza/plots/blob/master/examples/random_1000_checktopology.png?raw=true) | ![](https://github.com/HaydenElza/plots/blob/master/examples/systematic_1000_checktopology.png?raw=true) | ![](https://github.com/HaydenElza/plots/blob/master/examples/equidistant_1000_checktopology.png?raw=true)
 
-### Rotation
+### Rotation:
 
 Rotation in degrees of point array in counter-clockwise direction about extent center. Defaut `rotation=0`. Examples using `--rotation -15`:
 
