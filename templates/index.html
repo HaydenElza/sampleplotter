@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            .centered {
+                margin: 0px auto;
+                float: none;
+            }
+        </style>
+    </head>
+    <body>
+        <map name="ribbon">
+            <area shape="poly" coords="0,0,120,120,120,0" href="https://github.com/HaydenElza/plots">
+        </map>
+        <img src="/assets/img/alpha_ribbon.png" usemap="#ribbon" alt="Alpha" style="position:absolute;top:0;right:0;border:none;">
+        <div class="row">
+            <div class="col-xs-6 col-md-4 centered">
+                <div class="container">
+                    <div class="header">
+                        <h1 class="text-muted">Sample Plotter</h1>
+                    </div>
+                </div>
+                <div class="container">
+                    <form action="upload" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="fileinput">.shp + .shx</label>
+                            <input id="fileinput" type="file" name="file[]" multiple />
+                        </div>
+                        <label>Sample Type:</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="sample_type" value="random_sample">
+                                Random
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="sample_type" value="systematic_grid">
+                                Systematic
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="sample_type" value="equidistant">
+                                Equidistant
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Points:</label>
+                            <input class="form-control" type="number" name="n" min="1" required>
+                        </div>
+                        <div class="checkbox">
+                            <label>Check Topology:</label>
+                            <input type="checkbox" name="check_topology" value="True">
+                        </div>
+                        <div class="form-group">
+                            <label>Rotation (degrees):</label>
+                            <input class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
+                        </div>
+                        <input class="btn btn-default" type="submit" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
