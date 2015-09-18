@@ -30,9 +30,9 @@ plots.py -s <sampletype> -i <inputfile> -o <outputfile> -n <numberofplots> {-t <
 
 | `sample_type` | Description |
 ---|:--
-Random | Randomly creates the specified number of points.
-Systematic | Given a target number of points (n), a systematic grid of points is created. A between point distance (d) is calculated to get the total number of points as close to n as possible. Initial point is randomly chosen between 0 and d for both x and y axes.
-Equidistant | Given a number of points (n), a systematic triangular grid of points is created. Points are equidistant from each other. A between point distance (d) is calculated to get the total number of points as close to n as possible. Initial point is randomly chosen between 0 and d for both x and y axes.
+random | Randomly creates the specified number of points.
+systematic | Given a target number of points (n), a systematic grid of points is created. A between point distance (d) is calculated to get the total number of points as close to n as possible. Initial point is randomly chosen between 0 and d for both x and y axes.
+equidistant | Given a number of points (n), a systematic triangular grid of points is created. Points are equidistant from each other. A between point distance (d) is calculated to get the total number of points as close to n as possible. Initial point is randomly chosen between 0 and d for both x and y axes.
 
 ### Check Topology:
 
