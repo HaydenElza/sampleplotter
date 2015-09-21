@@ -3,7 +3,7 @@
 
 This is a small project to provide simple scripts to generate sample plots given an area of interest.
 
-### Webapp: [sampleplotter.com](http://www.sampleplotter.com)
+#### Webapp: [sampleplotter.com](http://www.sampleplotter.com)
 
 ### Usage:
 
@@ -24,7 +24,7 @@ plots.py -s <sampletype> -i <inputfile> -o <outputfile> -n <numberofplots> {-t <
   	                     of point array about center of extent. [default: 0]
 ~~~
 
-### Requirements:
+#### Requirements:
 - python 2.7
 - python modules: ogr, numpy 1.9.2
 
