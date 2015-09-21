@@ -24,6 +24,11 @@ plots.py -s <sampletype> -i <inputfile> -o <outputfile> -n <numberofplots> {-t <
   	                     of point array about center of extent. [default: 0]
 ~~~
 
+### Requirements:
+- python 2.7
+- python modules: ogr, numpy 1.9.2
+
+
 #### Example:
 
 Open terminal or command prompt and navigate to directory containing ```plots.py```:
