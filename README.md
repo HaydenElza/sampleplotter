@@ -3,9 +3,7 @@
 
 This is a small project to provide simple scripts to generate sample plots given an area of interest.
 
-### Webapp:
-
-[sampleplotter.com](http://www.sampleplotter.com)
+### Webapp: [sampleplotter.com](http://www.sampleplotter.com)
 
 ### Usage:
 
