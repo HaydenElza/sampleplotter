@@ -1,3 +1,4 @@
 output/
 exact_snippet.py
 plots.qgs*
+*.pyc

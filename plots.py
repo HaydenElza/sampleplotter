@@ -8,7 +8,7 @@ except:
 		print "Import of ogr failed."
 
 # Import other needed modules
-import os, sys, gdalconst, numpy, getopt, time, datetime
+import os, sys, numpy, getopt, time, datetime
 
 def rotate(p0_x,p0_y,extent,rotation):
 	rotation = rotation*numpy.pi/180  # Convert degrees to radians
@@ -164,7 +164,7 @@ def main(argv):
 	driver = ogr.GetDriverByName('ESRI Shapefile')
 
 	# Open the file using the driver
-	study_area = driver.Open(input_path, gdalconst.GA_ReadOnly)
+	study_area = driver.Open(input_path, 0)
 
 	# Verify if the file was opened, if not exit
 	if study_area is None:
@@ -191,10 +191,10 @@ def main(argv):
 	#----------------
 	# Prepare Points
 	#----------------
-
+	time_stamp = datetime.datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
 	# Check if path exists
-	if os.path.isfile(os.path.join(output_dir,datetime.datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")+".shp")):
-		print os.path.join(output_dir,"plots.shp"), "already exists. Move or rename and run again."
+	if os.path.isfile(os.path.join(output_dir,time_stamp+".shp")):
+		print os.path.join(output_dir,time_stamp+".shp"), "already exists. Move or rename and run again."
 		sys.exit(-1)
 
 	# Create shapefile
@@ -244,8 +244,7 @@ def main(argv):
 	poly = None
 	plots = None
 	plots_def = None
-	plots_feature = None
 	point = None
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+	main(sys.argv[1:])

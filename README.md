@@ -1,9 +1,11 @@
 # Plots
 #### shapefile + desired number of points in → sample plots out
 
-Webapp at [sampleplotter.com](http://www.sampleplotter.com)
-
 This is a small project to provide simple scripts to generate sample plots given an area of interest.
+
+### Webapp:
+
+[sampleplotter.com](http://www.sampleplotter.com)
 
 ### Usage:
 
@@ -23,6 +25,22 @@ plots.py -s <sampletype> -i <inputfile> -o <outputfile> -n <numberofplots> {-t <
   -r --rotation          Counter-clockwise rotation, in degrees,
   	                     of point array about center of extent. [default: 0]
 ~~~
+
+#### Example:
+
+Open terminal or command prompt and navigate to directory containing ```plots.py```:
+
+~~~
+cd /path/to/directory
+~~~
+
+Invoke python and execute ```plots.py``` with desired options. In this example I want 50 equidistant plots with 15 degrees of rotation that stay within the bounds of my study area.
+
+~~~
+E:\plots>python plots.py -s equidistant -i E:\plots\test_data\irregular_shape.shp -o E:\plots\output -n 50 -t True -r 15
+~~~
+
+===
 
 ### Sample Types:
 
