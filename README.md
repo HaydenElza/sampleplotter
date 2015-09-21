@@ -62,7 +62,7 @@ If `--check_topology True`, as close to n points as possible will be created *on
 
 ### Rotation:
 
-Rotation in degrees of point array in counter-clockwise direction about extent center. Defaut `rotation=0`. Examples using `--rotation -15`:
+Rotation in degrees of point array in counter-clockwise direction about extent center. Default `rotation=0`. Examples using `--rotation -15`:
 
 | Systematic | Equidistant |
 |---|---|
