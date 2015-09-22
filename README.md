@@ -1,4 +1,4 @@
-# Plots
+# Sample Plotter
 #### shapefile + desired number of points in → sample plots out
 
 This is a small project to provide simple scripts to generate sample plots given an area of interest.
