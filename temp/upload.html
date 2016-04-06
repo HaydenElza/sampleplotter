@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!-- saved from url=(0085)https://www.pythonanywhere.com/user/elza/files/home/elza/mysite/templates/upload.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="shortcut icon" href="https://www.pythonanywhere.com/user/elza/files/home/elza/mysite/templates/img/favicon.png" type="image/png">
+        <link href="./upload_files/bootstrap.min.css" rel="stylesheet">
+        <style>
+            #title {
+                display: table;
+                margin: 40px auto;
+            }
+            #title img {
+                float: left;
+            }
+            #title h1 {
+                display: inline-block;
+                width: 150px;
+                margin: 1px 10px 1px 10px;
+                font-size: 34pt;
+            }
+            #map {
+                width: 100%;
+                height: 0;
+                padding: 35%;
+            }
+            #footer {
+                text-align: center;
+                position: absolute;
+                bottom: 10px;
+                width: 100%;
+            }
+        </style>
+
+        <script async="" src="./upload_files/analytics.js"></script><script type="text/javascript" src="./upload_files/js"></script>
+        <script type="text/javascript" src="./upload_files/shp.js"></script>
+
+        <script>
+            var url = "http://www.sampleplotter.com/output/{{ timestamp }}"
+            shp(url).then(function(data){
+            	var googleMap = new google.maps.Map(
+            		// Add a Google Map
+            		document.getElementById('map'), {
+            			center: {lat: 0, lng: 0},
+            			zoom: 2,
+            			mapTypeId: 'satellite'
+            		}
+            	);
+
+            	var infowindow = new google.maps.InfoWindow();
+            	var bounds = new google.maps.LatLngBounds();
+            	data.features.forEach(function(feature, i){
+            		// Add a marker to the map
+            		feature.marker = new google.maps.Marker({
+            			position:new google.maps.LatLng(
+            				feature.geometry.coordinates[1],
+            				feature.geometry.coordinates[0]
+            			),
+            			title:feature.properties.TOWN,
+            			icon: "http://mt.google.com/vt/icon/name=icons/spotlight/directions_decision_point_hover_medium.png&scale=1.5"
+            		});
+            		feature.marker.setMap(googleMap);
+
+            		// Create the info window
+            		//console.log(feature.properties);
+            		var out = [];
+            		for(var key in feature.properties){
+            			out.push(key+": "+feature.properties[key]);
+            		}
+            		var content = "<div class='iwindow'>" + out.join("<br/>") + "</div>";
+            		google.maps.event.addListener(
+            			feature.marker,
+            			'click',
+            			function() {
+             				infowindow.setContent(content);
+            				infowindow.open(googleMap,feature.marker);
+            			}
+
+            		);
+            		bounds.extend(new google.maps.LatLng(feature.geometry.coordinates[1],feature.geometry.coordinates[0]))
+            	});
+            	googleMap.fitBounds(bounds);
+
+            	//var url2 = "http://www.sampleplotter.com/uploads/{{ upload_filename }}"
+            	//googleMap.data.loadGeoJson(shp(url2));
+            });
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div id="title" class="header">
+                <img id="SP_gif" src="./upload_files/SP.gif-" alt="Sample Plotter Logo" height="100px">
+                <h1 class="text-muted">Sample Plotter</h1>
+            </div>
+        </div>
+        <div class="container">
+          <div class="header">
+            <h3 class="text-muted">Output Plots</h3>
+          </div>
+          <hr>
+          <div>
+          Here are the output files for the plots, click on them to load/download them. Note the projection is the same as the input dataset.
+          <ul>
+            {% for file in output_filenames %}
+              <li><a href="https://www.pythonanywhere.com/user/elza/files/home/elza/mysite/templates/%7B%7Burl_for('output_file',%20filename=file)%7D%7D">{{file}}</a></li>
+            {% endfor %}
+          </ul>
+          </div>
+        </div>
+        <br><br><br>
+        <div class="container">
+          <div class="header">
+            <h3 class="text-muted">Uploaded Files</h3>
+          </div>
+          <hr>
+          <div>
+          This is a list of the files you just uploaded in case you need them, click on them to load/download them.
+          <ul>
+            {% for file in upload_filenames %}
+              <li><a href="https://www.pythonanywhere.com/user/elza/files/home/elza/mysite/templates/%7B%7Burl_for('uploaded_file',%20filename=file)%7D%7D">{{file}}</a></li>
+            {% endfor %}
+          </ul>
+          </div>
+
+          <br><br><br>
+
+          <div id="map"></div>
+
+          <br><br><br>
+        </div>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-63988500-2', 'auto');
+            ga('send', 'pageview');
+
+        </script>
+    
+</body></html>
