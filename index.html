@@ -7,11 +7,12 @@
 		<meta name="author" content="Hayden Elza">
 		<link rel="shortcut icon" href="./img/favicon.png" type="image/png">
 		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+		<link rel="stylesheet" href="./js/leaflet/leaflet.css" />
 
 		<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script src="./js/turf.min.js" charset="utf-8"></script>
 		<script src="./js/leaflet/leaflet.js"></script>
+		<script src="./js/leaflet.ajax.min.js"></script>
 		<script src="js/sampleplotter.js" ></script>
 
 		<style>
@@ -109,7 +110,10 @@
 						<div id="save-as"><a style="display:none;"></a></div>
 					</form>
 				</div>
-				<div id="map" style="width: 100%; height: 400px"></div>
+				<br>
+				<div class="container">
+					<div id="map" style="width: 100%; height: 400px"></div>
+				</div>
 			</div>
 			<div class="col-xs-12 col-md-5 col-md-offset-1">
 				<br><br><br><br><br><br><br><br><br>
