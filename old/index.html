@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Generate Sample Plots</title>
+		<meta name="description" content="Generate sample plots. Spatially generate sample points using systematic grid, equidistant, or random plot methods.">
+		<meta name="keywords" content="sample,plot,plots,points,generate,spatial,shapefile,gis,sampling,design">
+		<meta name="author" content="Hayden Elza">
+		<link rel="shortcut icon" href="./img/favicon.png" type="image/png">
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="./js/leaflet/leaflet.css" />
+
+		<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+		<script src="./js/turf.min.js" charset="utf-8"></script>
+		<script src="./js/leaflet/leaflet.js"></script>
+		<script src="./js/leaflet.ajax.min.js"></script>
+		<script src="js/sampleplotter.js" ></script>
+		<script src="js/script.js"></script>
+
+		<style>
+			html {
+				min-width: 565px;
+				background: url(./img/whitediamond.png);
+			}
+			body {
+				background: rgba(0,0,0,0);
+			}
+			.centered {
+				margin: 0px auto;
+				float: none;
+			}
+			#title {
+				display: table;
+				margin: 40px auto;
+			}
+			#title div {
+				float: left;
+			}
+			#title h1 {
+				display: inline-block;
+				width: 150px;
+				margin: 1px 10px 1px 10px;
+				font-size: 34pt;
+			}
+			#footer {
+				text-align: center;
+				position: absolute;
+				bottom: 10px;
+				width: 100%;
+			}
+			#save-as {
+				display: inline-block;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<a href="https://github.com/HaydenElza/plots"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+		<div class="row" style="width: 100%;">
+			<div class="col-xs-12 col-md-4 col-md-offset-1">
+				<div class="container">
+					<div id="title" class="header">
+						<div style="height: 100px; width:52px;"><img id="SP_gif" src="" alt="Logo" height="100px"></div>
+						<h1 class="text-muted">Sample Plotter</h1>
+					</div>
+				</div>
+				<div class="container">
+					<div class="header">
+						<h5 class="text-muted" style="text-align: center;">Generate sample plots by inputting a GeoJSON.</h5>
+					</div>
+				</div>
+				<div class="container">
+					<form action="upload" method="post" enctype="multipart/form-data">
+						<div class="form-group">
+							<label for="fileinput">Select your GeoJSON</label>
+							<input id="fileinput" type="file" name="file[]" multiple />
+						</div>
+						<label>Sample Type:</label>
+						<div class="radio">
+							<label class="popoverOption" data-content="Points are randomly chosen from uniform distribution." rel="popover" data-placement="right" data-original-title="Random Sample" data-image-url=="/static/img/example_random.png">
+								<input type="radio" name="sample_type" value="random_sample" required onclick="document.getElementById('rotation-input').disabled = true">
+								Random
+							</label>
+						</div>
+						<div class="radio">
+							<label class="popoverOption" data-content="Points form square grid. Random starting point." rel="popover" data-placement="right" data-original-title="Systematic Grid">
+								<input type="radio" name="sample_type" value="systematic_sample" required onclick="document.getElementById('rotation-input').disabled = false">
+								Systematic
+							</label>
+						</div>
+						<div class="radio">
+							<label class="popoverOption" data-content="Points form triangular grid. Random starting point." rel="popover" data-placement="right" data-original-title="Equidistant Grid">
+								<input type="radio" name="sample_type" value="equidistant_sample" required onclick="document.getElementById('rotation-input').disabled = false">
+								Equidistant
+							</label>
+						</div>
+						<div class="form-group">
+							<label>Number of Points:</label>
+							<input id="sample_number" class="form-control" type="number" name="sample_number" min="1" placeholder="example: 10" required>
+						</div>
+						<!--<div class="checkbox">
+							<label class="popoverOption" data-content="If box is checked, points will only be created within the boundary of the input feature. If the box is unchecked, points will be created within the extent of the input feature." rel="popover" data-placement="bottom" data-original-title="Check Topology">
+								<input type="checkbox" name="check_topology" value="True" disabled>
+								Check Topology [Disabled, use <a href="https://github.com/HaydenElza/plots">script</a> for this functionality.]
+							</label>
+						</div>-->
+						<div class="form-group">
+							<label>Rotation (degrees):</label>
+							<input id="rotation-input" class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
+						</div>
+						<input class="btn btn-default" type="button" value="Submit" onclick="loadFile();" />
+						<div id="save-as"><a style="display:none;"></a></div>
+					</form>
+				</div>
+				<br>
+				<div class="container">
+					<div id="map" style="width: 100%; height: 400px"></div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-md-5 col-md-offset-1">
+				<br><br><br><br><br><br><br><br><br>
+				<h3>Three Sample Types:</h3>
+				<img src="./img/sample_types.png" style="width:100%;">
+				<br><br><br>
+				<h3>Choose number of points:</h3>
+				<img src="./img/number_points.png" style="width:100%;">
+				<br><br><br>
+				<h3>Rotation:</h3>
+				<img src="./img/rotation.png" style="width:100%;">
+				<br><br><br>
+			</div>
+		</div>
+		<!--<small id="footer">2015 &copy; Hayden Elza - All rights reserved.</small>-->
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.0/bootstrap.min.js"></script>
+		<script>
+			$('.popoverOption').popover({
+				trigger: "hover"
+			});
+		</script>
+		<script type="text/javascript">
+			$(document).ready(function () {
+				$("#SP_gif").attr("src", "./img/SP.gif");// + Math.random());
+			});
+		</script>
+	</body>
+</html>

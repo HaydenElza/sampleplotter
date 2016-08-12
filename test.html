@@ -1,48 +1,43 @@
+<!DOCTYPE html>
 <html>
+<head>
+  
+<title>Leaflet</title>
+
+<style>
+  html { height: 100% }
+  body { height: 100%; margin: 0; padding: 0;}
+  #map{ height: 100% }
+  }
+</style>
+
+</head>
 <body>
 
-<form id="jsonFile" name="jsonFile" enctype="multipart/form-data" method="post">
+<div id="map"></div>
 
-  <fieldset>
-    <h2>Json File</h2>
-     <input type='file' id='fileinput'>
-     <input type='button' id='btnLoad' value='Load' onclick='sampleplotter();'>
-  </fieldset>
-</form>
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
 
+<script src="./js/leaflet/leaflet.js"></script>
+<link rel="stylesheet" href="./js/leaflet/leaflet.css" />
 
-<script type="text/javascript">
+<script src='js/shp.js'></script>
 
-  function loadFile() {
-    var input, file, fr;
+<script>
+	// Make map
+	map = L.map('map');
 
-    if (typeof window.FileReader !== 'function') {
-      alert("The file API isn't supported on this browser yet.");
-      return;
-    }
+	//for the shapefiles in the files folder called pandr.shp
+	shp("test_data/irregular_shape.zip").then(function(geojson){
+		// Add both GeoJSONs
+		var indata = L.geoJson([geojson])
+		indata.addTo(map);
+		map.fitBounds(indata.getBounds());
+		console.log(geojson);
+	});
 
-    input = document.getElementById('fileinput');
-    if (!input) {
-      alert("Um, couldn't find the fileinput element.");
-    }
-    else if (!input.files) {
-      alert("This browser doesn't seem to support the `files` property of file inputs.");
-    }
-    else if (!input.files[0]) {
-      alert("Please select a file before clicking 'Load'");
-    }
-    else {
-      file = input.files[0];
-      fr = new FileReader();
-      fr.onload = receivedText;
-      fr.readAsText(file);
-    }
-
-    function receivedText(e) {
-      lines = e.target.result;
-      var newArr = JSON.parse(lines); 
-    }
-  }
+	
 </script>
 
 </body>

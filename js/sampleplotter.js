@@ -1,31 +1,3 @@
-// Load in GeoJSON
-function loadFile() {
-	var input, file, fr;
-
-	// Check support
-	if (typeof window.FileReader !== 'function') {
-		alert("The file API isn't supported on this browser yet.");
-		return;
-	}
-
-	input = document.getElementById('fileinput');
-
-	if (!input) {alert("Um, couldn't find the fileinput element.");}
-	else if (!input.files) {alert("This browser doesn't seem to support the `files` property of file inputs.");}
-	else if (!input.files[0]) {alert("Please select a file before clicking 'Submit'");}
-	else if (input.files[0]['name'].split('.').pop() != 'geojson') {alert("Only .geojson extensions are supported.")}
-	else {
-		var inJSON = {};
-		file = input.files[0];
-		fr = new FileReader();
-		fr.onload = function() {
-			var inJSON = JSON.parse(fr.result);
-			genPlots(inJSON);
-		};
-		fr.readAsText(file);
-	}
-}
-
 // Create range from 0 to k-1
 function range(k) {
 	return Array.apply(null, Array(k)).map(function (_, i) {return i;})
@@ -40,6 +12,9 @@ function genPlots(inJSON) {
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "equidistant_sample") {
 		equidistantSample(inJSON)
+	}
+	else if ($('input[name="sample_type"]:checked').val() == undefined) {
+		alert("You must first upload a dataset.")
 	}
 	else {
 		alert("You must choose a sample type.");
@@ -58,16 +33,19 @@ function rotate_point(pointX, pointY, originX, originY, angle) {
 	
 function displayOnMap(inJSON,outJSON) {
 	// Remove previous map on resubmission
-	if (document.getElementById('map').style['position'] != "") {
-		map.remove()
-	}
+	//if (document.getElementById('map').style['position'] != "") {
+	//	map.remove()
+	//}
 	// Make map
-	map = L.map('map');
+	//map = L.map('map');
 
 	// Add both GeoJSONs
-	var indata = L.geoJson([inJSON,outJSON])
-	indata.addTo(map);
-	map.fitBounds(indata.getBounds());
+	//var indata = L.geoJson([inJSON,outJSON])
+	//indata.addTo(map);
+	//map.fitBounds(indata.getBounds());
+	if (typeof geojsonLayer != 'undefined'){ m.removeLayer(geojsonLayer); };
+	geojsonLayer = L.geoJson([outJSON]);
+	geojsonLayer.addTo(m);
 }
 
 function randomSample(inJSON) {
