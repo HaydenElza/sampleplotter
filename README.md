@@ -1,47 +1,11 @@
 # Sample Plotter
-#### shapefile + desired number of points in → sample plots out
+#### Generate sample points for a study area and all in your browser!
 
-This is a small project to provide simple scripts to generate sample plots given an area of interest.
+This is a small project to provide a web app to generate sample plots given an area of interest.
 
 #### Webapp: [sampleplotter.com](http://www.sampleplotter.com)
 
-### Usage:
-
-~~~
-plots.py -s <sampletype> -i <inputfile> -o <outputfile> -n <numberofplots> {-t <checktopology> [default:True|False] -r <rotationindegrees> [defualt:0]}
-~~~
-
-~~~
-  -h --help              Show this screen.
-  -s --sample_type       Sample type.
-  	                     (random_sample|systematic_grid|equidistant)
-  -i --input_path        Path to input shapefile.
-  -o --output_dir        Path to output directory.
-  -n --plot_number       Target number of plots to generate.
-  -t --check_topology    Only create points within study area.
-  	                     [default: True|False]
-  -r --rotation          Counter-clockwise rotation, in degrees,
-  	                     of point array about center of extent. [default: 0]
-~~~
-
-#### Requirements:
-- python 2.7
-- python modules: ogr, numpy 1.9.2
-
-
-#### Example:
-
-Open terminal or command prompt and navigate to directory containing ```plots.py```:
-
-~~~
-cd /path/to/directory
-~~~
-
-Invoke python and execute ```plots.py``` with desired options. In this example I want 50 equidistant plots with 15 degrees of rotation that stay within the bounds of my study area.
-
-~~~
-E:\plots>python plots.py -s equidistant -i E:\plots\test_data\irregular_shape.shp -o E:\plots\output -n 50 -t True -r 15
-~~~
+[![](http://i.imgur.com/0Hrvvmn.png)](http://www.sampleplotter.com)
 
 ===
 
@@ -59,7 +23,7 @@ equidistant | Given a number of points (n), a systematic triangular grid of poin
 
 ### Check Topology:
 
-If `--check_topology True`, as close to n points as possible will be created *only* within study area. Default `check_topology=True`.
+If "check_topology" is on, as close to n points as possible will be created *only* within study area.
 
 | Random | Systematic | Equidistant |
 |---|---|---|
@@ -67,7 +31,7 @@ If `--check_topology True`, as close to n points as possible will be created *on
 
 ### Rotation:
 
-Rotation in degrees of point array in counter-clockwise direction about extent center. Default `rotation=0`. Examples using `--rotation -15`:
+Rotation in degrees of point array in counter-clockwise direction about extent center. (Currently broken in web app, something funky is going on.)
 
 | Systematic | Equidistant |
 |---|---|
