@@ -5,7 +5,7 @@ This is a small project to provide a web app to generate sample plots given an a
 
 #### Webapp: [sampleplotter.com](http://www.sampleplotter.com)
 
-[![]([Imgur](http://i.imgur.com/0Hrvvmn.png)](http://www.sampleplotter.com)
+[![](http://i.imgur.com/0Hrvvmn.png)](http://www.sampleplotter.com)
 
 ===
 
