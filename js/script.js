@@ -111,7 +111,7 @@ require(['catiline'], function(cw) {
         upButton.type = "file";
         upButton.id = "input";
         upButton.onchange = function() {
-            document.getElementById("dropzone").getElementsByClassName("btn")[0].innerHTML = "+";
+            document.getElementById("dropzone").style.display = "none";
             var file = document.getElementById("input").files[0];
 
             handleFile(file);
