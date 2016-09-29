@@ -8,9 +8,6 @@ function genPlots(inJSON) {
 	var n = Number(document.getElementById("sample_number").value);
 	if ($('input[name="check_topology"]:checked').val() && $('input[name="sample_type"]:checked').val() != "random_sample"){
 		// n * (area of extent / area of poly)
-		console.log(turf.bboxPolygon(turf.extent(inJSON)))
-		console.log(turf.area(turf.bboxPolygon(turf.extent(inJSON))))
-		console.log(turf.area(inJSON))
 		var n = parseInt(n * (turf.area(turf.bboxPolygon(turf.extent(inJSON)))/turf.area(inJSON)) );
 	}
 	console.log(n);
@@ -61,7 +58,18 @@ function displayOnMap(inJSON,outJSON) {
 	//indata.addTo(map);
 	//map.fitBounds(indata.getBounds());
 	if (typeof geojsonLayer != 'undefined'){ m.removeLayer(geojsonLayer); };
-	geojsonLayer = L.geoJson([outJSON]);
+	geojsonLayer = L.geoJson([outJSON], {
+		pointToLayer: function (feature, latlng) {                    
+			return new L.CircleMarker(latlng, {
+				radius: 5,
+				fillColor: "#fff",
+				color: "#000",
+				weight: 1,
+				opacity: 1,
+				fillOpacity: 1.0
+			});
+		},
+	});
 	geojsonLayer.addTo(m);
 }
 
