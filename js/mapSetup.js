@@ -54,9 +54,10 @@ var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/
 Esri_WorldImagery.addTo(m);
 var lc = L.control.layers({
     "ESRI World Imagery": Esri_WorldImagery,
+    "Thunderforest Landscape": Thunderforest_Landscape,
     "OSM Black and White": blackandwhite,
-    "Mapbox Streets": mq,
-    "Thunderforest Landscape": Thunderforest_Landscape
+    "Mapbox Streets": mq
+    
 }).addTo(m);
 //make the map
 var options = {
