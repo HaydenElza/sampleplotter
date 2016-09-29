@@ -87,7 +87,7 @@
 					<label>Sample Type:</label>
 					<div class="radio">
 						<label class="popoverOption" data-content="Points are randomly chosen from uniform distribution." rel="popover" data-placement="right" data-original-title="Random Sample" data-image-url=="/static/img/example_random.png">
-							<input type="radio" name="sample_type" value="random_sample" required onclick="document.getElementById('rotation-input').disabled = true">
+							<input type="radio" name="sample_type" value="random_sample" required <onclick="document.getElementById('rotation-input').disabled = true">
 							Random
 						</label>
 					</div>
@@ -107,13 +107,13 @@
 						<label>Number of Points:</label>
 						<input id="sample_number" class="form-control" type="number" name="sample_number" min="1" placeholder="example: 10" required>
 					</div>
-					<!--<div class="checkbox">
+					<div class="checkbox">
 						<label class="popoverOption" data-content="If box is checked, points will only be created within the boundary of the input feature. If the box is unchecked, points will be created within the extent of the input feature." rel="popover" data-placement="bottom" data-original-title="Check Topology">
-							<input type="checkbox" name="check_topology" value="True" disabled>
-							Check Topology [Disabled, use <a href="https://github.com/HaydenElza/plots">script</a> for this functionality.]
+							<input type="checkbox" name="check_topology" value="True">
+							Check Topology
 						</label>
-					</div>-->
-					<div class="form-group">
+					</div>
+					<div class="form-group" style="display: none;">
 						<label>Rotation (degrees):</label>
 						<input id="rotation-input" class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
 					</div>

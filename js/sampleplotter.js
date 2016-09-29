@@ -4,14 +4,25 @@ function range(k) {
 }
 
 function genPlots(inJSON) {
+	// Adjust n for topology check
+	var n = Number(document.getElementById("sample_number").value);
+	if ($('input[name="check_topology"]:checked').val() && $('input[name="sample_type"]:checked').val() != "random_sample"){
+		// n * (area of extent / area of poly)
+		console.log(turf.bboxPolygon(turf.extent(inJSON)))
+		console.log(turf.area(turf.bboxPolygon(turf.extent(inJSON))))
+		console.log(turf.area(inJSON))
+		var n = parseInt(n * (turf.area(turf.bboxPolygon(turf.extent(inJSON)))/turf.area(inJSON)) );
+	}
+	console.log(n);
+	// Sample types
 	if ($('input[name="sample_type"]:checked').val() == "random_sample"){
-		randomSample(inJSON)
+		randomSample(inJSON,n)
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "systematic_sample") {
-		systematicSample(inJSON)
+		systematicSample(inJSON,n)
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "equidistant_sample") {
-		equidistantSample(inJSON)
+		equidistantSample(inJSON,n)
 	}
 	else if ($('input[name="sample_type"]:checked').val() == undefined) {
 		alert("You must first upload a dataset.")
@@ -29,6 +40,12 @@ function rotate_point(pointX, pointY, originX, originY, angle) {
 		x: (Math.cos(angle) * (pointX-originX) - Math.sin(angle) * (pointY-originY)) + originX,
 		y: (Math.sin(angle) * (pointX-originX) + Math.cos(angle)* (pointY-originY)) + originY
 	};
+}
+
+function topology(poly_fc,point) {
+	var poly = turf.merge(poly_fc);
+	var inside = turf.inside(point,poly);
+	return inside;
 }
 	
 function displayOnMap(inJSON,outJSON) {
@@ -48,23 +65,31 @@ function displayOnMap(inJSON,outJSON) {
 	geojsonLayer.addTo(m);
 }
 
-function randomSample(inJSON) {
+function randomSample(inJSON,n) {
 	var bounds =  L.geoJson(inJSON).getBounds();
 	var extent = [bounds._southWest.lng, bounds._northEast.lng, bounds._southWest.lat, bounds._northEast.lat]  // Extent: minx, maxx, miny, maxy
 	var rangeX = extent[1]-extent[0];
 	var rangeY = extent[3]-extent[2];
-	var n = Number(document.getElementById("sample_number").value);
 
 	// Generate points
+	if ($('input[name="check_topology"]:checked').val()){var check_topology = true;} else {var check_topology = false;}
 	var points = [];
 	for (var fid in range(n)) {
-		var newPoint = turf.point(
-			[
-				extent[0]+(rangeX*Math.random()), 
-				extent[2]+(rangeY*Math.random())
-			],
-			{ "fid": fid }
-		);
+		var inside = false;
+		while (inside == false) {
+			var newPoint = turf.point(
+				[
+					extent[0]+(rangeX*Math.random()), 
+					extent[2]+(rangeY*Math.random())
+				],
+				{ "fid": fid }
+			);
+			if (check_topology) {
+				var inside = topology(inJSON,newPoint);
+			} else {
+				var inside = true;
+			}
+		}
 		points.push(newPoint)
 	}
 
@@ -74,7 +99,7 @@ function randomSample(inJSON) {
 	exportAndDisplay(inJSON,outJSON)
 }
 
-function systematicSample(inJSON) {
+function systematicSample(inJSON,n) {
 
 	var bounds =  L.geoJson(inJSON).getBounds();
 	var extent = [bounds._southWest.lng, bounds._northEast.lng, bounds._southWest.lat, bounds._northEast.lat]  // Extent: minx, maxx, miny, maxy
@@ -82,7 +107,6 @@ function systematicSample(inJSON) {
 	var rangeY = extent[3]-extent[2];
 	var centerX = (extent[0]+extent[1])/2;
 	var centerY = (extent[2]+extent[3])/2;
-	var n = Number(document.getElementById("sample_number").value);
 	var rot = Number(document.getElementById("rotation-input").value);
 
 	/*if (rot != 0) {
@@ -105,6 +129,8 @@ function systematicSample(inJSON) {
 	var yStart = extent[2]+(d*Math.random());
 	var fid = 0;
 
+	if ($('input[name="check_topology"]:checked').val()){var check_topology = true;} else {var check_topology = false;}
+
 	for (var u in range(nX)) {
 		var x = xStart + (u*d);
 		for (var v in range(nY)) {
@@ -121,6 +147,10 @@ function systematicSample(inJSON) {
 				[x,y],
 				{ "fid": fid }
 			);
+			if (check_topology) {
+				var inside = topology(inJSON,newPoint);
+				if (!inside) {continue}
+			}
 			points.push(newPoint)
 			fid++
 		}		
@@ -132,7 +162,7 @@ function systematicSample(inJSON) {
 	exportAndDisplay(inJSON,outJSON)
 }
 
-function equidistantSample(inJSON) {
+function equidistantSample(inJSON,n) {
 
 	var bounds =  L.geoJson(inJSON).getBounds();
 	var extent = [bounds._southWest.lng, bounds._northEast.lng, bounds._southWest.lat, bounds._northEast.lat]  // Extent: minx, maxx, miny, maxy
@@ -140,7 +170,6 @@ function equidistantSample(inJSON) {
 	var rangeY = extent[3]-extent[2];
 	var centerX = (extent[0]+extent[1])/2;
 	var centerY = (extent[2]+extent[3])/2;
-	var n = Number(document.getElementById("sample_number").value);
 	var rot = Number(document.getElementById("rotation-input").value);
 
 	if (rot != 0) {
@@ -162,6 +191,8 @@ function equidistantSample(inJSON) {
 	var yStart = extent[2]+((d*Math.sqrt(2)/2)*Math.random());
 	var fid = 0;
 
+	if ($('input[name="check_topology"]:checked').val()){var check_topology = true;} else {var check_topology = false;}
+
 	for (var v in range(nY)) {
 		y = yStart + (v*d*Math.sqrt(2)/2)
 		for (var u in range(nX)){
@@ -178,6 +209,10 @@ function equidistantSample(inJSON) {
 					[x,y],
 					{ "fid": fid }
 				);
+				if (check_topology) {
+					var inside = topology(inJSON,newPoint);
+					if (!inside) {continue}
+				}
 				points.push(newPoint)
 				fid++
 			}
@@ -194,6 +229,10 @@ function equidistantSample(inJSON) {
 					[x,y],
 					{ "fid": fid }
 				);
+				if (check_topology) {
+					var inside = topology(inJSON,newPoint);
+					if (!inside) {continue}
+				}
 				points.push(newPoint)
 				fid++
 			}
