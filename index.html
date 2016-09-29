@@ -47,12 +47,19 @@
 	}
 	#map {
 		width: 100%;
-		height: 400px
+		height: 60vh;
+	}
+	#help-btn {
+		float: right;
+		margin-right: 15px;
+		position: absolute;
+		bottom: -50px;
+		right: 0;
 	}
 </style>
 
 <link rel="stylesheet" href="js/leaflet/leaflet.css" />
-<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
 </head>
 <body>
@@ -73,17 +80,17 @@
 		</div>
 	</div>
 	<br><br><br>
-	<div class="row">
-		<div class="container">
-			<div class="col-xs-12 col-md-6">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12">
 				<div id="map"></div>
+				<button id="help-btn" href="#help" type="button" class="btn btn-default">Help</button>
 			</div>
+		</div>
+		<div class="row">
+			<br>
 			<div class="col-xs-12 col-md-6">
 				<form action="upload" method="post" enctype="multipart/form-data">
-					<!--<div class="form-group">
-						<label for="input">Select your GeoJSON</label>
-						<input id="input" type="file" class="upStuff" />
-					</div>-->
 					<label>Sample Type:</label>
 					<div class="radio">
 						<label class="popoverOption" data-content="Points are randomly chosen from uniform distribution." rel="popover" data-placement="right" data-original-title="Random Sample" data-image-url=="/static/img/example_random.png">
@@ -107,13 +114,13 @@
 						<label>Number of Points:</label>
 						<input id="sample_number" class="form-control" type="number" name="sample_number" min="1" placeholder="example: 10" required>
 					</div>
-					<!--<div class="checkbox">
+					<div class="checkbox">
 						<label class="popoverOption" data-content="If box is checked, points will only be created within the boundary of the input feature. If the box is unchecked, points will be created within the extent of the input feature." rel="popover" data-placement="bottom" data-original-title="Check Topology">
-							<input type="checkbox" name="check_topology" value="True" disabled>
-							Check Topology [Disabled, use <a href="https://github.com/HaydenElza/plots">script</a> for this functionality.]
+							<input type="checkbox" name="check_topology" value="True">
+							Check Topology
 						</label>
-					</div>-->
-					<div class="form-group">
+					</div>
+					<div class="form-group" style="display: none;">
 						<label>Rotation (degrees):</label>
 						<input id="rotation-input" class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
 					</div>
@@ -122,21 +129,29 @@
 				</form>
 			</div>
 		</div>
-	</div>
-	<br><br><br>
-	<div class="row">
-		<div class="container">
-			<div class="col-xs-4">
-				<h3>Three Sample Types:</h3>
-				<img src="./img/sample_types.png" style="width:100%;">
-			</div>
-			<div class="col-xs-4">
-				<h3>Choose number of points:</h3>
-				<img src="./img/number_points.png" style="width:100%;">
-			</div>
-			<div class="col-xs-4">
-				<h3>Rotation:</h3>
-				<img src="./img/rotation.png" style="width:100%;">
+		
+		<!-- Modal -->
+		<div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">	
+				<div class="modal-content">
+					<div class="modal-body row">
+						<div class="col-xs-12">
+							<h3>Three Sample Types:</h3>
+							<img src="./img/sample_types.png" style="width:100%;">
+						</div>
+						<div class="col-xs-12">
+							<h3>Choose number of points:</h3>
+							<img src="./img/number_points.png" style="width:100%;">
+						</div>
+						<div class="col-xs-12">
+							<h3>Rotation:</h3>
+							<img src="./img/rotation.png" style="width:100%;">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<a href="#" class="btn btn-default" data-dismiss="modal">Close</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -166,6 +181,11 @@
 		// Insert logo, generates random string on end to force gif play on each page load
 		$(document).ready(function () {
 			$("#SP_gif").attr("src", "./img/SP.gif");// + Math.random());
+		});
+		$(document).ready(function(){
+			$("#help-btn").click(function(){
+				$("#help").modal({backdrop: true});
+			});
 		});
 	</script>
 
