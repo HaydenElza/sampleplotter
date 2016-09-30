@@ -22,7 +22,7 @@ function genPlots(inJSON) {
 		equidistantSample(inJSON,n)
 	}
 	else if ($('input[name="sample_type"]:checked').val() == undefined) {
-		alert("You must first upload a dataset.")
+		alert("You must choose a sample type.")
 	}
 	else {
 		alert("You must choose a sample type.");
