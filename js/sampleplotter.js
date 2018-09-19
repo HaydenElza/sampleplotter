@@ -60,6 +60,9 @@ function genPlots(inJSON) {
 		var outJSON = turf.within(outJSON,inJSON);
 	}
 
+	// Update actual number of points
+	document.getElementById('point-number').innerHTML = outJSON.features.length;
+
 	// Export and Display on Map
 	exportAndDisplay(inJSON,outJSON)
 }
@@ -206,7 +209,7 @@ function exportAndDisplay (inJSON,outJSON) {
 	a.download    = "SamplePoints.geojson";
 	a.href        = url;
 	a.textContent = "Download Sample Points";
-	a.className   = "btn btn-default"
+	a.className   = "btn btn-dark p-3"
 
 	document.getElementById('save-as').replaceChild(a,document.getElementById('save-as').firstChild);
 	displayOnMap(inJSON,outJSON)

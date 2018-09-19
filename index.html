@@ -34,32 +34,59 @@
 		margin: 1px 10px 1px 10px;
 		font-size: 34pt;
 	}
-	#intro {
 
+	.form-heading {
+		font-size: 1.3em;
+		font-weight: 500;
 	}
+	input[type="radio"] {
+		position: fixed;
+		opacity: 0;
+	}
+	label img {
+		
+	}
+	input[type="radio"]:checked+label {
+		color: white;
+		background: #88ce98; 
+	}
+	input[type="checkbox"]:checked+label {
+		color: #88ce98;
+	}
+	#save-as a {
+		background: #88ce98; 
+	}
+
 	#footer {
 		text-align: center;
 		position: absolute;
 		bottom: 10px;
 		width: 100%;
 	}
-	#save-as {
-		display: inline-block;
-	}
+
 	.upStuff {
 		display: none !important;
 	}
+	#load-data-msg {
+		width: 100%;
+		background: white;
+		font-size: 2rem;
+		text-align: center;
+		padding: 1rem;
+		z-index: 200;
+	}
+	#load-data-msg small {
+		font-size: 1rem;
+		padding: 0.5rem;
+	}
 	#map {
 		width: 100%;
-		height: 75vh;
-		margin: 15px auto;
+		height: 80vh;
+		margin: 0 auto 15px auto;
 	}
 	.leaflet-control-layers-selector {
 		position: relative !important;
 		margin-left: 0 !important;
-	}
-	.btn {
-		margin-bottom: 10px;
 	}
 	#form-col {
 		margin-top: 5px;
@@ -87,70 +114,73 @@
 	
 	<div class="row">
 		<div class="col-md-12 col-lg-4">
-			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-lg-12">
-					<div id="title" class="header">
-						<div style="height: 100px; width:52px;"><img id="SP_gif" src="" alt="Logo" height="100px"></div>
-						<h1 class="text-muted">Sample Plotter</h1>
-					</div>
-					<div id="intro">
-						<p>Sample Plotter is a tool designed to simplify the process of generating plots for plot sampling.</p>
-						<p>Plot sampling is used in forestry, ecology, and other environmental sciences with varying methods such as random plots, regular grid, or equidistant grid depending on the application.</p>
-						<p>Sample Plotter is free and open source, no need for ArcGIS or other software—and since data is processed locally via JavaScript, your data stays private.</p>
-						<p>I hope you enjoy it. – Hayden</p>
-					</div>
-				</div>
-				<div id="form-col" class="col-xs-12 col-sm-6 col-lg-12">
-					<form action="upload" method="post" enctype="multipart/form-data">
-						<label>Sample Type:</label>
-						<div class="radio">
-							<label class="popoverOption" data-content="Points are randomly chosen from uniform distribution." rel="popover" data-placement="right" data-original-title="Random Sample" data-image-url=="/static/img/example_random.png">
-								<input type="radio" name="sample_type" value="random_sample" required onclick="document.getElementById('rotation-input').disabled = true">
-								Random
-							</label>
-						</div>
-						<div class="radio">
-							<label class="popoverOption" data-content="Points form square grid. Random starting point." rel="popover" data-placement="right" data-original-title="Systematic Grid">
-								<input type="radio" name="sample_type" value="systematic_sample" required onclick="document.getElementById('rotation-input').disabled = false">
-								Systematic
-							</label>
-						</div>
-						<div class="radio">
-							<label class="popoverOption" data-content="Points form triangular grid. Random starting point." rel="popover" data-placement="right" data-original-title="Equidistant Grid">
-								<input type="radio" name="sample_type" value="equidistant_sample" required onclick="document.getElementById('rotation-input').disabled = false">
-								Equidistant
-							</label>
-						</div>
-						<div class="form-group">
-							<label>Number of Points:</label>
-							<input id="sample_number" class="form-control" type="number" name="sample_number" min="1" placeholder="example: 10" required>
-						</div>
-						<div class="checkbox">
-							<label class="popoverOption" data-content="If box is checked, points will only be created within the boundary of the input feature. If the box is unchecked, points will be created within the extent of the input feature." rel="popover" data-placement="bottom" data-original-title="Check Topology">
-								<input type="checkbox" name="check_topology" value="True" checked="checked">
-								Check Topology
-							</label>
-						</div>
-						<div class="form-group">
-							<label>Rotation (degrees):</label>
-							<input id="rotation-input" class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
-						</div>
-						<input class="btn btn-default" type="button" value="Submit" onclick="if (typeof geoJSON == 'undefined') {alert('You need to upload a dataset first!')} else {genPlots(geoJSON);}" />
-						<div id="save-as"><a style="display:none;"></a></div>
-					</form>
-				</div>
+			<div class="row border-bottom-0 rounded shadow-sm bg-white">
+				<div id="upload" class="col-3 p-0"></div>
+				<div class="col-9 p-3">geojson or zipped shapefile</div>
 			</div>
+			<form action="upload" method="post" enctype="multipart/form-data" onchange="genPlots(geoJSON);">
+				<div class="row border rounded shadow-sm bg-white my-3">
+					<div class="col">
+						<div class="row bg-secondary text-white rounded-top">
+							<div class="col form-heading p-2 pl-3 border-bottom">Sample Type</div>
+						</div>
+						
+						<div class="row text-center">
+							<div class="col-4 radio p-0"><input id="random" type="radio" name="sample_type" value="random_sample" required onclick="document.getElementById('rotation-input').disabled = true"><label for="random" class="mb-0 pb-2"><img class="w-100 p-2" src="img/random.png">random</label></div>
+							<div class="col-4 radio p-0"><input id="systematic" type="radio" name="sample_type" value="systematic_sample" required onclick="document.getElementById('rotation-input').disabled = false" checked="checked"><label for="systematic" class="mb-0 pb-2"><img class="w-100 p-2" src="img/systematic.png">systematic</label></div>
+							<div class="col-4 radio p-0"><input id="equidistant" type="radio" name="sample_type" value="equidistant_sample" required onclick="document.getElementById('rotation-input').disabled = false"><label for="equidistant" class="mb-0 pb-2"><img class="w-100 p-2" src="img/equidistant.png">equidistant</label></div>
+						</div>
+					</div>	
+				</div>
+				<div class="row my-3">
+					<div class="col-6 pl-0" style="padding-right:7.5px;">
+						<div class="col border rounded shadow-sm bg-white">
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Number of Points</div>
+							<div class="row p-3">
+								<input id="sample_number" class="form-control" type="number" name="sample_number" min="1" value="100" required>
+							</div>
+						</div>
+					</div>
+					<div class="col-6 pr-0" style="padding-left:7.5px;">
+						<div class="col border rounded shadow-sm bg-white">
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Actual Number of Points</div>
+							<div class="row p-3">
+								<div id="point-number" class="col text-center" style="font-size: 1.6em;">50</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row my-3">
+					<div class="col-6 pl-0" style="padding-right:7.5px;">
+						<div class="col border rounded shadow-sm bg-white">
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Rotation (degrees)</div>
+							<div class="row p-3">
+								<input id="rotation-input" class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
+							</div>
+						</div>
+					</div>
+					<div class="col-6 pr-0" style="padding-left:7.5px;">
+						<div class="col border rounded shadow-sm bg-white h-100 text-center form-heading checkbox" style="padding-top:15%;">
+							<input class="mr-1" type="checkbox" name="check_topology" value="True" checked="checked"><label for="check_topology"> Check Topology</label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<button type="button" class="btn btn-dark col-3 p-3 rounded shadow-sm" onclick="genPlots(geoJSON);" >submit</button>
+					<div id="save-as" class="ml-3 rounded shadow-sm"><a style="display:none;"></a></div>
+				</div>
+			</form>
 		</div>
 		<div class="col-md-12 col-lg-8">
 			<div id="map"></div>
-			<a id="help-btn" class="btn btn-default" href="https://github.com/HaydenElza/sampleplotter" target="_blank" role="button">Help</a>
-			<input class="btn btn-default" type="button" value="Test Box" onclick="testData1()" />
-			<input class="btn btn-default" type="button" value="Test Shape" onclick="testData2()" />
+			<a id="help-btn" class="btn btn-secondary" href="https://github.com/HaydenElza/sampleplotter" target="_blank" role="button">Help</a>
+			<!--<input class="btn btn-secondary" type="button" value="Test Box" onclick="testData1()" />
+			<input class="btn btn-secondary" type="button" value="Test Shape" onclick="testData2()" />-->
 		</div>
 	</div>
 
 	<script src="js/jquery-1.12.0.min.js"></script>
-	<script src="js/bootstrap-2.1.0.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
 
 	<script src="js/leaflet/leaflet.js"></script>
 	<script src="js/leaflet.hash.js"></script>
@@ -165,12 +195,6 @@
 	<script src="js/sampleplotter.js"></script>
 
 	<script>
-		// bootstrap popover
-		$('.popoverOption').popover({
-			trigger: "hover"
-		});
-	</script>
-	<script>
 		// Insert logo, generates random string on end to force gif play on each page load
 		$(document).ready(function () {
 			$("#SP_gif").attr("src", "./img/SP.gif");// + Math.random());
@@ -179,16 +203,23 @@
 			$("#help-btn").click(function(){
 				$("#help").modal({backdrop: true});
 			});
+			$("#map").append('<div class="leaflet-control-container"><div id="load-data-msg" class="leaflet-top bg-dark text-white">Upload your own data on the left, or drag and drop on map<br><small>GeoJSON, TopoJSON, or Zipped Shapefile work</small></div></div>')
 		});
-	</script>
-	<script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+
+		// pre-load example
+		testData2();
+		genPlots(geoJSON);
+		
+		
+
+		// google analytics
+        /*(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
         ga('create', 'UA-63988500-2', 'auto');
-        ga('send', 'pageview');
+        ga('send', 'pageview');*/
 
     </script>
 </body>
