@@ -31,7 +31,7 @@ If "check_topology" is on, as close to n points as possible will be created *onl
 
 ### Rotation:
 
-Rotation in degrees of point array in counter-clockwise direction about extent center. (Currently broken in web app, something funky is going on.)
+Rotation in degrees of point array in counter-clockwise direction about extent center.
 
 | Systematic | Equidistant |
 |---|---|
