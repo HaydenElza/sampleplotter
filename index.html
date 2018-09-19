@@ -17,24 +17,27 @@
 		background: rgba(0,0,0,0) !important;
 		padding: 75px;
 	}
+	header {
+		position: fixed;
+		line-height:0;
+		text-align: center;
+		top: 15px;
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+	}
+	header p {
+		position: relative;
+		display: inline-block;
+		vertical-align: bottom;
+		line-height: 1rem;
+		font-size: 2rem;
+		padding-left: 1rem;
+	}
 	.centered {
 		margin: 0px auto;
 		float: none;
 	}
-	#title {
-		display: table;
-		margin: 0 auto 20px auto;
-	}
-	#title div {
-		float: left;
-	}
-	#title h1 {
-		display: inline-block;
-		width: 150px;
-		margin: 1px 10px 1px 10px;
-		font-size: 34pt;
-	}
-
 	.form-heading {
 		font-size: 1.3em;
 		font-weight: 500;
@@ -63,7 +66,6 @@
 		bottom: 10px;
 		width: 100%;
 	}
-
 	.upStuff {
 		display: none !important;
 	}
@@ -88,19 +90,11 @@
 		position: relative !important;
 		margin-left: 0 !important;
 	}
-	#form-col {
-		margin-top: 5px;
-	}
 	@media (min-width: 768px) and (max-width: 1199px) {
-		#form-col {
-			position: absolute;
-			bottom: 0;
-			right: 0;
-		}
 	}
-	@media (max-width: 1200px) {
+	@media (max-width: 1199px) {
 		#map {
-			height: 60vh;
+			height: 46vh;
 		}
 	}
 </style>
@@ -112,8 +106,11 @@
 <body>
 	<a href="https://github.com/HaydenElza/plots"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
 	
+	<header class="lead"><img id="SP_gif" src="" alt="Logo" height="45px"><p>Sample Plotter</p></header>
+	
 	<div class="row">
-		<div class="col-md-12 col-lg-4">
+		<div class="col-md-12 col-lg-12 col-xl-4 pb-3">
+			
 			<div class="row border-bottom-0 rounded shadow-sm bg-white">
 				<div id="upload" class="col-3 p-0"></div>
 				<div class="col-9 p-3">geojson or zipped shapefile</div>
@@ -171,9 +168,31 @@
 				</div>
 			</form>
 		</div>
-		<div class="col-md-12 col-lg-8">
+		<div class="col-md-12 col-lg-12 col-xl-8">
 			<div id="map"></div>
 			<a id="help-btn" class="btn btn-secondary" href="https://github.com/HaydenElza/sampleplotter" target="_blank" role="button">Help</a>
+			<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#authors-note">Author's Note</button>
+
+			<!-- Author's Note -->
+			<div class="modal fade" id="authors-note" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalCenterTitle">Author's Note</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<p>Sample Plotter is a tool designed to simplify the process of generating plots for plot sampling.</p>
+							<p>Plot sampling is used in forestry, ecology, and other environmental sciences with varying methods such as random plots, regular grid, or equidistant grid depending on the application.</p>
+							<p>Sample Plotter is free and open source, no need for ArcGIS or other software—and since data is processed locally via JavaScript, your data stays private.</p>
+							<p>I hope you enjoy it. – Hayden</p>
+						</div>
+						<div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div>
+					</div>
+				</div>
+			</div>
 			<!--<input class="btn btn-secondary" type="button" value="Test Box" onclick="testData1()" />
 			<input class="btn btn-secondary" type="button" value="Test Shape" onclick="testData2()" />-->
 		</div>
