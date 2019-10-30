@@ -7,10 +7,10 @@ function genPlots(inJSON) {
 	var n = Number(document.getElementById("sample_number").value);
 	var check_topology = $('input[name="check_topology"]:checked').val();
 	var rot = Number(document.getElementById("rotation-input").value)
-	var extent = turf.extent(inJSON);
+	var extent = turf.bbox(inJSON);
 
 	// Adjust n for topology check
-	if (check_topology) {var n = parseInt(n * (turf.area(turf.bboxPolygon(turf.extent(inJSON)))/turf.area(inJSON)) );}
+	if (check_topology) {var n = parseInt(n * (turf.area(turf.bboxPolygon(turf.bbox(inJSON)))/turf.area(inJSON)) );}
 	// Adjust n for rotation
 	if (rot != 0) {
 		var c = Math.sqrt(Math.pow(Math.abs(extent[0]-extent[2]),2)+Math.pow(Math.abs(extent[1]-extent[3]),2));
@@ -21,19 +21,22 @@ function genPlots(inJSON) {
 	// Sample types
 	if ($('input[name="sample_type"]:checked').val() == "random_sample"){
 		var points = randomSample(inJSON,n,extent);
+		var outJSON = turf.featureCollection(points);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "systematic_sample") {
 		var points = systematicSample(inJSON,n,extent);
+		var outJSON = turf.featureCollection(points);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "equidistant_sample") {
 		var points = equidistantSample(inJSON,n,extent);
+		var outJSON = turf.featureCollection(points);
+	}
+	else if ($('input[name="sample_type"]:checked').val() == "hex_grid") {
+		var outJSON = hexGrid(inJSON,n,extent);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == undefined) {
 		alert("You must choose a sample type.")
 	}
-
-	// Create output geojson
-	var outJSON = turf.featurecollection(points);
 
 	// Rotate
 	if (rot != 0) {
@@ -52,12 +55,13 @@ function genPlots(inJSON) {
 			);
 			rotPoints.push(rotPoint)
 		}
-		var outJSON = turf.featurecollection(rotPoints);
+		var outJSON = turf.featureCollection(rotPoints);
 	}
 
 	// Check Topology
 	if (check_topology) {
-		var outJSON = turf.within(outJSON,inJSON);
+		console.log(turf.getType(outJSON))
+		// var outJSON = turf.within(outJSON,inJSON);
 	}
 
 	// Update actual number of points
@@ -198,6 +202,15 @@ function equidistantSample(inJSON,n,extent) {
 	}
 		
 	return points
+}
+
+function hexGrid(inJSON,n,bbox) {
+	var cellSide = 50;
+	var options = {units: 'meters'};
+
+	var hexgrid = turf.hexGrid(bbox, cellSide, options);
+
+	return hexgrid
 }
 
 function exportAndDisplay (inJSON,outJSON) {
