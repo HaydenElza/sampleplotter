@@ -32,7 +32,7 @@ function genPlots(inJSON) {
 		var outJSON = turf.featureCollection(points);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "hex_grid") {
-		var outJSON = hexGrid(inJSON,n,extent);
+		var outJSON = hexGrid(inJSON,n,extent,check_topology);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == undefined) {
 		alert("You must choose a sample type.")
@@ -60,8 +60,16 @@ function genPlots(inJSON) {
 
 	// Check Topology
 	if (check_topology) {
-		console.log(turf.getType(outJSON))
-		// var outJSON = turf.within(outJSON,inJSON);
+		if (outJSON.features[0].geometry.type==='Point') {
+			var outJSON = turf.within(outJSON,inJSON);
+		} else {
+			// turf.featureEach(outJSON, function (currentFeature, featureIndex) {
+			// 	if (turf.booleanOverlap(currentFeature,inJSON)==true) {
+			// 		console.log('intersects')
+			// 	}
+			// });
+		}
+		
 	}
 
 	// Update actual number of points
@@ -204,10 +212,18 @@ function equidistantSample(inJSON,n,extent) {
 	return points
 }
 
-function hexGrid(inJSON,n,bbox) {
-	var cellSide = 50;
-	var options = {units: 'meters'};
+function hexGrid(inJSON,n,bbox,check_topology) {
+	if(check_topology){var mask = turf.flatten(inJSON).features[0]} else {undefined};
+	var cellSide = 55;
+	var options = {
+		units: 'meters',
+		mask: mask
+	};
 
+	// Increase bbox size so grid covers all of AOI, random element to randomize start of grid
+	var bbox = turf.bbox(turf.buffer(turf.bboxPolygon(bbox),cellSide*2*(1+Math.random()),{units: 'meters'}))
+
+	console.log(turf.flatten(inJSON).features[0])
 	var hexgrid = turf.hexGrid(bbox, cellSide, options);
 
 	return hexgrid
