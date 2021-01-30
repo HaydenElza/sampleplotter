@@ -117,7 +117,7 @@
 			
 			<div class="row border-bottom-0 rounded shadow-sm bg-white">
 				<div id="upload" class="col-3 p-0"></div>
-				<div class="col-9 p-3">geojson or zipped shapefile</div>
+				<div class="col-9 p-3">geojson or zipped shapefile (WGS 84)</div>
 			</div>
 			<form action="upload" method="post" enctype="multipart/form-data" onchange="genPlots(geoJSON);">
 				<div class="row border rounded shadow-sm bg-white my-3">
@@ -144,11 +144,6 @@
 								<input id="triangle" type="radio" name="sample_type" value="triangle_grid" required onclick="enableOptions('grid','triangle')">
 								<label for="triangle" class="mb-0 pb-2"><img class="w-100 p-2" src="img/triangle_grid.png">triangle grid</label>
 							</div>
-							<!-- <div class="col-4 radio p-0">
-								<input id="systematic" type="radio" name="sample_type" value="systematic_sample" required onclick="document.getElementById('rotation-input').disabled = false" checked="checked">
-								<label for="systematic" class="mb-0 pb-2"><img class="w-100 p-2" src="img/systematic.png">systematic</label>
-							</div>
-							<div class="col-4 radio p-0"><input id="equidistant" type="radio" name="sample_type" value="equidistant_sample" required onclick="document.getElementById('rotation-input').disabled = false"><label for="equidistant" class="mb-0 pb-2"><img class="w-100 p-2" src="img/equidistant.png">equidistant</label></div> -->
 						</div>
 					</div>	
 				</div>
@@ -264,7 +259,7 @@
 			$("#help-btn").click(function(){
 				$("#help").modal({backdrop: true});
 			});
-			$("#map").append('<div class="leaflet-control-container"><div id="load-data-msg" class="leaflet-top bg-dark text-white">Upload your own data on the left, or drag and drop on map</div></div>')
+			$("#map").append('<div class="leaflet-control-container"><div id="load-data-msg" class="leaflet-top bg-dark text-white">Upload your own data on the left, or drag and drop on map (WGS 84)</div></div>')
 		});
 
 		// pre-load example
