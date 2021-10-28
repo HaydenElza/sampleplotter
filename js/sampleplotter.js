@@ -3,14 +3,63 @@ function range(k) {
 	return Array.apply(null, Array(k)).map(function (_, i) {return i;})
 }
 
+function enableOptions(pointGrid,type) {
+	function options(enableDisable, ids) {
+		if (enableDisable=='enable') {
+			ids.forEach(function(id){
+				$('#'+id).prop('disabled', false);
+				$('#'+id).parent().parent().find('div.bg-secondary').addClass('active');
+			})
+		} else if (enableDisable=='disable') {
+			ids.forEach(function(id){
+				$('#'+id).prop('disabled', true);
+				$('#'+id).parent().parent().find('div.bg-secondary').removeClass('active');
+			})
+		}
+	}
+
+	if (pointGrid=='point') {
+		options('enable',['sample-number','rotation-input'])
+		options('disable',['cell-side'])
+		if (type=='random') {
+			options('disable',['rotation-input']);
+		} else {
+			options('enable',['rotation-input']);
+		}
+	} else if (pointGrid=='grid') {
+		options('enable',['cell-side'])
+		$('#rotation-input').val('0')
+		options('disable',['sample-number','rotation-input'])
+
+	}
+	
+}
+
+function getCellSide(pointGrid, n, bbox) {
+	if (pointGrid=='grid') {
+		return Number(document.getElementById("cell-side").value);
+	} else if (pointGrid=='point') {
+		var dX = Math.max(bbox[0],bbox[2])-Math.min(bbox[0],bbox[2]);
+		var dY = Math.max(bbox[1],bbox[3])-Math.min(bbox[1],bbox[3]);
+		var nX = parseInt(Math.round(Math.sqrt((n*dX)/dY),0));
+		var d = dX/(nX);
+
+		return d
+	}
+}
+
+
 function genPlots(inJSON) {
-	var n = Number(document.getElementById("sample_number").value);
-	var check_topology = $('input[name="check_topology"]:checked').val();
+	var n = Number(document.getElementById("sample-number").value);
+	var check_topology = $('input[name="check-topology"]:checked').val();
 	var rot = Number(document.getElementById("rotation-input").value)
-	var extent = turf.extent(inJSON);
+	var extent = turf.bbox(inJSON);
+	if(check_topology){
+		var mask = turf.flatten(inJSON).features[0];
+	} else {undefined}
 
 	// Adjust n for topology check
-	if (check_topology) {var n = parseInt(n * (turf.area(turf.bboxPolygon(turf.extent(inJSON)))/turf.area(inJSON)) );}
+	if (check_topology) {var n = parseInt(n * (turf.area(turf.bboxPolygon(turf.bbox(inJSON)))/turf.area(inJSON)) );}
 	// Adjust n for rotation
 	if (rot != 0) {
 		var c = Math.sqrt(Math.pow(Math.abs(extent[0]-extent[2]),2)+Math.pow(Math.abs(extent[1]-extent[3]),2));
@@ -21,19 +70,29 @@ function genPlots(inJSON) {
 	// Sample types
 	if ($('input[name="sample_type"]:checked').val() == "random_sample"){
 		var points = randomSample(inJSON,n,extent);
+		var outJSON = turf.featureCollection(points);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "systematic_sample") {
 		var points = systematicSample(inJSON,n,extent);
+		var outJSON = turf.featureCollection(points);
+		// var outJSON = systematicPoints(inJSON,n,extent,mask)
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "equidistant_sample") {
 		var points = equidistantSample(inJSON,n,extent);
+		var outJSON = turf.featureCollection(points);
+	}
+	else if ($('input[name="sample_type"]:checked').val() == "hex_grid") {
+		var outJSON = hexGrid(inJSON,n,extent,mask);
+	}
+	else if ($('input[name="sample_type"]:checked').val() == "square_grid") {
+		var outJSON = squareGrid(inJSON,n,extent,mask);
+	}
+	else if ($('input[name="sample_type"]:checked').val() == "triangle_grid") {
+		var outJSON = triangleGrid(inJSON,n,extent,mask);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == undefined) {
 		alert("You must choose a sample type.")
 	}
-
-	// Create output geojson
-	var outJSON = turf.featurecollection(points);
 
 	// Rotate
 	if (rot != 0) {
@@ -52,12 +111,21 @@ function genPlots(inJSON) {
 			);
 			rotPoints.push(rotPoint)
 		}
-		var outJSON = turf.featurecollection(rotPoints);
+		var outJSON = turf.featureCollection(rotPoints);
 	}
 
 	// Check Topology
 	if (check_topology) {
-		var outJSON = turf.within(outJSON,inJSON);
+		if (outJSON.features[0].geometry.type==='Point') {
+			var outJSON = turf.within(outJSON,inJSON);
+		} else {
+			// turf.featureEach(outJSON, function (currentFeature, featureIndex) {
+			// 	if (turf.booleanOverlap(currentFeature,inJSON)==true) {
+			// 		console.log('intersects')
+			// 	}
+			// });
+		}
+		
 	}
 
 	// Update actual number of points
@@ -77,22 +145,34 @@ function rotate_point(pointX, pointY, originX, originY, angle) {
 	
 function displayOnMap(inJSON,outJSON) {
 	if (typeof geojsonLayer != 'undefined'){ m.removeLayer(geojsonLayer); };
-	geojsonLayer = L.geoJson([outJSON], {
-		pointToLayer: function (feature, latlng) {                    
-			return new L.CircleMarker(latlng, {
-				radius: 5,
-				fillColor: "#fff",
-				color: "#000",
-				weight: 1,
-				opacity: 1,
-				fillOpacity: 1.0
-			});
-		},
-	});
+
+	if (outJSON.features[0].geometry.type==='Point') {
+		geojsonLayer = L.geoJson([outJSON], {
+			pointToLayer: function (feature, latlng) {                    
+				return new L.CircleMarker(latlng, {
+					radius: 5,
+					fillColor: "#fff",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 1.0
+				});
+			},
+		});
+	} else {
+		var polygonStyle = {
+			"color": "#ffffff",
+			"weight": 3,
+			"opacity": 0.65
+		};
+		geojsonLayer = L.geoJson([outJSON], {style: polygonStyle});
+	}
+
+	
 	geojsonLayer.addTo(m);
 }
 
-function randomSample(inJSON,n,extent) {
+function randomSample(mask,n,extent) {
 	var rangeX = extent[2]-extent[0];
 	var rangeY = extent[3]-extent[1];
 
@@ -126,6 +206,7 @@ function systematicSample(inJSON,n,extent) {
 	var nX = parseInt(Math.round(Math.sqrt((n*dX)/dY),0));
 	var nY = parseInt(Math.round(Math.sqrt((n*dY)/dX),0));
 	var d = dX/(nX);
+	console.log(extent)
 
 	var xStart = extent[0]+(d*Math.random());
 	var yStart = extent[1]+(d*Math.random());
@@ -200,6 +281,67 @@ function equidistantSample(inJSON,n,extent) {
 	return points
 }
 
+function systematicPoints(inJSON,n,bbox,mask) {
+	var cellSide = getCellSide('point', n, bbox);
+	var options = {
+		units: 'degrees',
+		mask: mask
+	};
+
+	// Randomize bbox size to randomize start of grid
+	var bbox = turf.bbox(turf.buffer(turf.bboxPolygon(bbox),cellSide*(1+Math.random()),{units: 'degrees'}))
+
+	var features = turf.pointGrid(bbox, cellSide, options);
+
+	return features
+}
+
+function hexGrid(inJSON,n,bbox,mask) {
+	var cellSide = getCellSide('grid');
+	var options = {
+		units: 'meters',
+		mask: mask
+	};
+
+	// Increase bbox size so grid covers all of AOI, Math.random() added to randomize start of grid
+	var bbox = turf.bbox(turf.buffer(turf.bboxPolygon(bbox),cellSide*2*(1+Math.random()),{units: 'meters'}))
+
+	var featues = turf.hexGrid(bbox, cellSide, options);
+
+	return featues
+}
+
+function squareGrid(inJSON,n,bbox,mask) {
+	var cellSide = getCellSide('grid');
+	var options = {
+		units: 'meters',
+		mask: mask
+	};
+
+	// Increase bbox size so grid covers all of AOI, Math.random() added to randomize start of grid
+	var bbox = turf.bbox(turf.buffer(turf.bboxPolygon(bbox),cellSide*2*(1+Math.random()),{units: 'meters'}))
+
+	var featues = turf.squareGrid(bbox, cellSide, options);
+
+	return featues
+}
+
+function triangleGrid(inJSON,n,bbox,mask) {
+	var cellSide = getCellSide('grid');
+	var options = {
+		units: 'meters',
+		mask: mask,
+		triangles: true
+	};
+
+	// Increase bbox size so grid covers all of AOI, Math.random() added to randomize start of grid
+	var bbox = turf.bbox(turf.buffer(turf.bboxPolygon(bbox),cellSide*2*(1+Math.random()),{units: 'meters'}))
+
+	var featues = turf.hexGrid(bbox, cellSide, options);
+
+	return featues
+}
+
 function exportAndDisplay (inJSON,outJSON) {
 	var json = JSON.stringify(outJSON);
 	var blob = new Blob([json], {type: "application/json"});
@@ -208,7 +350,7 @@ function exportAndDisplay (inJSON,outJSON) {
 	var a = document.createElement('a');
 	a.download    = "SamplePoints.geojson";
 	a.href        = url;
-	a.textContent = "Download Sample Points";
+	a.textContent = "Download Sample Plots";
 	a.className   = "btn btn-dark p-3"
 
 	document.getElementById('save-as').replaceChild(a,document.getElementById('save-as').firstChild);

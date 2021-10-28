@@ -12,6 +12,7 @@
 	html {
 		min-width: 565px;
 		background: url(./img/whitediamond.png);
+		font-size: 0.75rem;
 	}
 	body {
 		background: rgba(0,0,0,0) !important;
@@ -59,6 +60,9 @@
 	#save-as a {
 		background: #88ce98; 
 	}
+	div .active {
+		background: #88ce98 !important;
+	}
 
 	#footer {
 		text-align: center;
@@ -72,7 +76,7 @@
 	#load-data-msg {
 		width: 100%;
 		background: white;
-		font-size: 2rem;
+		font-size: 1rem;
 		text-align: center;
 		padding: 1rem;
 		z-index: 200;
@@ -113,7 +117,7 @@
 			
 			<div class="row border-bottom-0 rounded shadow-sm bg-white">
 				<div id="upload" class="col-3 p-0"></div>
-				<div class="col-9 p-3">geojson or zipped shapefile</div>
+				<div class="col-9 p-3">geojson or zipped shapefile (WGS 84)</div>
 			</div>
 			<form action="upload" method="post" enctype="multipart/form-data" onchange="genPlots(geoJSON);">
 				<div class="row border rounded shadow-sm bg-white my-3">
@@ -123,24 +127,38 @@
 						</div>
 						
 						<div class="row text-center">
-							<div class="col-4 radio p-0"><input id="random" type="radio" name="sample_type" value="random_sample" required onclick="document.getElementById('rotation-input').disabled = true"><label for="random" class="mb-0 pb-2"><img class="w-100 p-2" src="img/random.png">random</label></div>
-							<div class="col-4 radio p-0"><input id="systematic" type="radio" name="sample_type" value="systematic_sample" required onclick="document.getElementById('rotation-input').disabled = false" checked="checked"><label for="systematic" class="mb-0 pb-2"><img class="w-100 p-2" src="img/systematic.png">systematic</label></div>
-							<div class="col-4 radio p-0"><input id="equidistant" type="radio" name="sample_type" value="equidistant_sample" required onclick="document.getElementById('rotation-input').disabled = false"><label for="equidistant" class="mb-0 pb-2"><img class="w-100 p-2" src="img/equidistant.png">equidistant</label></div>
+							<div class="col-4 radio p-0"><input id="random" type="radio" name="sample_type" value="random_sample" required onclick="enableOptions('point','random')"><label for="random" class="mb-0 pb-2"><img class="w-100 p-2" src="img/random.png">random</label></div>
+							<div class="col-4 radio p-0"><input id="systematic" type="radio" name="sample_type" value="systematic_sample" required onclick="enableOptions('point','systematic')" checked="checked"><label for="systematic" class="mb-0 pb-2"><img class="w-100 p-2" src="img/systematic.png">systematic</label></div>
+							<div class="col-4 radio p-0"><input id="equidistant" type="radio" name="sample_type" value="equidistant_sample" required onclick="enableOptions('point','equidistant')"><label for="equidistant" class="mb-0 pb-2"><img class="w-100 p-2" src="img/equidistant.png">equidistant</label></div>
+						</div>
+						<div class="row text-center">
+							<div class="col-4 radio p-0">
+								<input id="hex" type="radio" name="sample_type" value="hex_grid" required onclick="enableOptions('grid','hex')">
+								<label for="hex" class="mb-0 pb-2"><img class="w-100 p-2" src="img/hex_grid.png">hex grid</label>
+							</div>
+							<div class="col-4 radio p-0">
+								<input id="square" type="radio" name="sample_type" value="square_grid" required onclick="enableOptions('grid','square')">
+								<label for="square" class="mb-0 pb-2"><img class="w-100 p-2" src="img/square_grid.png">square grid</label>
+							</div>
+							<div class="col-4 radio p-0">
+								<input id="triangle" type="radio" name="sample_type" value="triangle_grid" required onclick="enableOptions('grid','triangle')">
+								<label for="triangle" class="mb-0 pb-2"><img class="w-100 p-2" src="img/triangle_grid.png">triangle grid</label>
+							</div>
 						</div>
 					</div>	
 				</div>
 				<div class="row my-3">
 					<div class="col-6 pl-0" style="padding-right:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Number of Points</div>
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Desired Point Count</div>
 							<div class="row p-3">
-								<input id="sample_number" class="form-control" type="number" name="sample_number" min="1" value="100" required>
+								<input id="sample-number" class="form-control" type="number" name="sample-number" min="1" value="100" required>
 							</div>
 						</div>
 					</div>
 					<div class="col-6 pr-0" style="padding-left:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Actual Number of Points</div>
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Actual Plot Count</div>
 							<div class="row p-3">
 								<div id="point-number" class="col text-center" style="font-size: 1.6em;">50</div>
 							</div>
@@ -150,7 +168,25 @@
 				<div class="row my-3">
 					<div class="col-6 pl-0" style="padding-right:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Rotation (degrees)</div>
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Grid Cell Side (meters)</div>
+							<div class="row p-3">
+								<input id="cell-side" class="form-control" type="number" name="cell-side" min="1" value="50" required>
+							</div>
+						</div>
+					</div>
+					<!-- <div class="col-6 pr-0" style="padding-left:7.5px;">
+						<div class="col border rounded shadow-sm bg-white">
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Actual Plot Count</div>
+							<div class="row p-3">
+								<div id="point-number" class="col text-center" style="font-size: 1.6em;">50</div>
+							</div>
+						</div>
+					</div> -->
+				</div>
+				<div class="row my-3">
+					<div class="col-6 pl-0" style="padding-right:7.5px;">
+						<div class="col border rounded shadow-sm bg-white">
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Rotation (degrees)</div>
 							<div class="row p-3">
 								<input id="rotation-input" class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
 							</div>
@@ -158,12 +194,12 @@
 					</div>
 					<div class="col-6 pr-0" style="padding-left:7.5px;">
 						<div class="col border rounded shadow-sm bg-white h-100 text-center form-heading checkbox" style="padding-top:15%;">
-							<input class="mr-1" type="checkbox" name="check_topology" value="True" checked="checked"><label for="check_topology"> Check Topology</label>
+							<input class="mr-1" type="checkbox" name="check-topology" value="True" checked="checked"><label for="check-topology"> Check Topology</label>
 						</div>
 					</div>
 				</div>
 				<div class="row">
-					<button type="button" class="btn btn-dark col-3 p-3 rounded shadow-sm" onclick="genPlots(geoJSON);" >submit</button>
+					<button type="button" class="btn btn-dark col-3 p-3 rounded shadow-sm" onclick="genPlots(geoJSON);" >Regenerate</button>
 					<div id="save-as" class="ml-3 rounded shadow-sm"><a style="display:none;"></a></div>
 				</div>
 			</form>
@@ -204,7 +240,8 @@
 	<script src="js/leaflet/leaflet.js"></script>
 	<script src="js/leaflet.hash.js"></script>
 
-	<script src="js/turf.min.js" charset="utf-8"></script>
+	<script src="js/turf-5.1.6.min.js" charset="utf-8"></script>
+	<!-- <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script> -->
 
 	<script src="js/require.js"></script>
 	<script src="js/leaflet.spin.js"></script>
@@ -222,7 +259,7 @@
 			$("#help-btn").click(function(){
 				$("#help").modal({backdrop: true});
 			});
-			$("#map").append('<div class="leaflet-control-container"><div id="load-data-msg" class="leaflet-top bg-dark text-white">Upload your own data on the left, or drag and drop on map<br><small>GeoJSON, TopoJSON, or Zipped Shapefile work</small></div></div>')
+			$("#map").append('<div class="leaflet-control-container"><div id="load-data-msg" class="leaflet-top bg-dark text-white">Upload your own data on the left, or drag and drop on map (WGS 84)</div></div>')
 		});
 
 		// pre-load example
