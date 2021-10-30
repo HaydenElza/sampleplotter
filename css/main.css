@@ -32,6 +32,9 @@ header p {
     font-size: 1.3em;
     font-weight: 500;
 }
+.form-group {
+    width: 100%;
+}
 input[type="radio"] {
     position: fixed;
     opacity: 0;
@@ -43,7 +46,7 @@ input[type="radio"]:checked+label {
     color: white;
     background: #88ce98; 
 }
-input[type="checkbox"]:checked+label {
+input[name="check-topology"]:checked+label {
     color: #88ce98;
 }
 #save-as a {

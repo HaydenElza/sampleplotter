@@ -48,7 +48,9 @@ var Thunderforest_Landscape = L.tileLayer('https://{s}.tile.thunderforest.com/la
     apikey: '6cf6bd271b4a4e5a91e49547024e2839'
 });
 var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    maxZoom: 22,
+    maxNativeZoom: 17
 });
 
 Esri_WorldImagery.addTo(m);
