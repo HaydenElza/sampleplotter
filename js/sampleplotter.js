@@ -48,28 +48,6 @@ function getCellSide(pointGrid, n, bbox) {
 	}
 }
 
-function rotatePoints(points, rot){
-	var origin  = turf.center(points);
-	var originX = origin.geometry.coordinates[0];
-	var originY = origin.geometry.coordinates[1];
-	
-	var rotPoints = [];
-	for (i in range(points.features.length)) {
-		var pointX = points.features[i].geometry.coordinates[0];
-		var pointY = points.features[i].geometry.coordinates[1];
-		var rotCoords = rotate_point(pointX, pointY, originX, originY, rot);
-		var rotPoint = turf.point(
-			[rotCoords.x, rotCoords.y],
-			{ "fid": i }
-		);
-		rotPoints.push(rotPoint)
-	}
-	var outJSON = turf.featureCollection(rotPoints);
-
-	return outJSON
-}
-
-
 function genPlots(inJSON) {
 	var n = Number(document.getElementById("sample-number").value);
 	var check_topology = $('input[name="check-topology"]:checked').val();
@@ -143,14 +121,6 @@ function genPlots(inJSON) {
 
 	// Export and Display on Map
 	exportAndDisplay(inJSON,outJSON)
-}
-
-function rotate_point(pointX, pointY, originX, originY, angle) {
-	angle = angle * Math.PI / 180.0;
-	return {
-		x: (Math.cos(angle) * (pointX-originX) - Math.sin(angle) * (pointY-originY)) + originX,
-		y: (Math.sin(angle) * (pointX-originX) + Math.cos(angle)* (pointY-originY)) + originY
-	};
 }
 	
 function displayOnMap(inJSON,outJSON) {
