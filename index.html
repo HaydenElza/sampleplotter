@@ -84,14 +84,31 @@
 							</div>
 						</div>
 					</div>
-					<!-- <div class="col-6 pr-0" style="padding-left:7.5px;">
+					<div class="col-6 pr-0" style="padding-left:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Actual Plot Count</div>
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Plots as Polygons</div>
+
 							<div class="row p-3">
-								<div id="point-number" class="col text-center" style="font-size: 1.6em;">50</div>
+								<input id="polygon-plots" class="mr-3" type="checkbox" name="polygon-plots" value="True"><label for="polygon-plots"> make plots polygons</label>
+
+								<div class="form-group">
+									<label for="radius">radius</label>
+									<input id="radius" class="form-control" type="number" name="radius" min="1" value="10" required>
+								</div>
+
+								<div class="form-group">
+									<label for="steps">steps</label>
+									<input id="steps" class="form-control" type="number" name="steps" min="1" value="64" required>
+								</div>
+
+								<div class="form-group">
+									<label for="poly-rot">polygon rotation</label>
+									<input id="poly-rot" class="form-control" type="number" name="poly-rot" min="-360" max="360" value="0" required>
+								</div>
+							
 							</div>
 						</div>
-					</div> -->
+					</div>
 				</div>
 				<div class="row my-3">
 					<div class="col-6 pl-0" style="padding-right:7.5px;">
@@ -104,7 +121,7 @@
 					</div>
 					<div class="col-6 pr-0" style="padding-left:7.5px;">
 						<div class="col border rounded shadow-sm bg-white h-100 text-center form-heading checkbox" style="padding-top:15%;">
-							<input class="mr-1" type="checkbox" name="check-topology" value="True" checked="checked"><label for="check-topology"> Check Topology</label>
+							<input class="mr-3" type="checkbox" name="check-topology" value="True" checked="checked"><label for="check-topology"> Check Topology</label>
 						</div>
 					</div>
 				</div>

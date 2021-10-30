@@ -20,7 +20,7 @@ function enableOptions(pointGrid,type) {
 
 	if (pointGrid=='point') {
 		
-		options('enable',['sample-number','rotation-input'])
+		options('enable',['sample-number','rotation-input','polygon-plots','radius'])
 		options('disable',['cell-side'])
 		if (type=='random') {
 			options('disable',['rotation-input']);
@@ -30,7 +30,7 @@ function enableOptions(pointGrid,type) {
 		}
 	} else if (pointGrid=='grid') {
 		options('enable',['cell-side'])
-		options('disable',['sample-number'])
+		options('disable',['sample-number','polygon-plots','radius'])
 	}
 	
 }
@@ -51,6 +51,7 @@ function getCellSide(pointGrid, n, bbox) {
 function genPlots(inJSON) {
 	var n = Number(document.getElementById("sample-number").value);
 	var check_topology = $('input[name="check-topology"]:checked').val();
+	var point_as_poly = $('input[name="polygon-plots"]:checked').val();
 	var rot = Number(document.getElementById("rotation-input").value)
 	var extent = turf.bbox(inJSON);
 	if(check_topology){
@@ -105,16 +106,35 @@ function genPlots(inJSON) {
 			var outJSON = turf.within(outJSON,inJSON);
 		} else {
 			var features = [];
-			turf.featureEach(outJSON, function (currentFeature, featureIndex) {
-				if (turf.booleanIntersects(currentFeature,inJSON)==true) {
-					features.push(currentFeature)
+			turf.featureEach(outJSON, function (feature, featureIndex) {
+				if (turf.booleanIntersects(feature, inJSON) == true) {
+					features.push(feature)
 				}
 			});
-			var outJSON = turf.featureCollection(features);
+			outJSON = turf.featureCollection(features);
 		}
 		
 	}
-	
+
+	// If point as poly
+	if (outJSON.features[0].geometry.type==='Point' && point_as_poly) {
+		var radius = Number(document.getElementById("radius").value)/1000;
+		var steps = Number(document.getElementById("steps").value);
+		var polyRot = Number(document.getElementById("poly-rot").value);
+
+		var options = {
+			steps: steps,
+			units: 'kilometers'
+		};
+
+		var features = [];
+		turf.featureEach(outJSON, function (feature, featureIndex) {
+			feature = turf.circle(feature, radius, options)
+			if (polyRot != 0) {feature = turf.transformRotate(feature, polyRot)}
+			features.push(feature)
+		});
+		outJSON = turf.featureCollection(features);
+	}
 
 	// Update actual number of points
 	document.getElementById('point-number').innerHTML = outJSON.features.length;
