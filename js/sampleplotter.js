@@ -19,18 +19,18 @@ function enableOptions(pointGrid,type) {
 	}
 
 	if (pointGrid=='point') {
+		
 		options('enable',['sample-number','rotation-input'])
 		options('disable',['cell-side'])
 		if (type=='random') {
 			options('disable',['rotation-input']);
+			$('#rotation-input').val('0')
 		} else {
 			options('enable',['rotation-input']);
 		}
 	} else if (pointGrid=='grid') {
 		options('enable',['cell-side'])
-		$('#rotation-input').val('0')
-		options('disable',['sample-number','rotation-input'])
-
+		options('disable',['sample-number'])
 	}
 	
 }
@@ -47,7 +47,6 @@ function getCellSide(pointGrid, n, bbox) {
 		return d
 	}
 }
-
 
 function genPlots(inJSON) {
 	var n = Number(document.getElementById("sample-number").value);
@@ -75,14 +74,13 @@ function genPlots(inJSON) {
 	else if ($('input[name="sample_type"]:checked').val() == "systematic_sample") {
 		var points = systematicSample(inJSON,n,extent);
 		var outJSON = turf.featureCollection(points);
-		// var outJSON = systematicPoints(inJSON,n,extent,mask)
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "equidistant_sample") {
 		var points = equidistantSample(inJSON,n,extent);
 		var outJSON = turf.featureCollection(points);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "hex_grid") {
-		var outJSON = hexGrid(inJSON,n,extent,mask);
+		var outJSON = hexGrid(inJSON,n,extent,mask,rot);
 	}
 	else if ($('input[name="sample_type"]:checked').val() == "square_grid") {
 		var outJSON = squareGrid(inJSON,n,extent,mask);
@@ -96,22 +94,9 @@ function genPlots(inJSON) {
 
 	// Rotate
 	if (rot != 0) {
+		// outJSON = rotatePoints(outJSON, rot)
 		var origin  = turf.center(outJSON);
-		var originX = origin.geometry.coordinates[0];
-		var originY = origin.geometry.coordinates[1];
-		
-		var rotPoints = [];
-		for (i in range(outJSON.features.length)) {
-			var pointX = outJSON.features[i].geometry.coordinates[0];
-			var pointY = outJSON.features[i].geometry.coordinates[1];
-			var rotCoords = rotate_point(pointX, pointY, originX, originY, rot);
-			var rotPoint = turf.point(
-				[rotCoords.x, rotCoords.y],
-				{ "fid": i }
-			);
-			rotPoints.push(rotPoint)
-		}
-		var outJSON = turf.featureCollection(rotPoints);
+		outJSON = turf.transformRotate(outJSON, rot, {pivot: origin})
 	}
 
 	// Check Topology
@@ -119,28 +104,23 @@ function genPlots(inJSON) {
 		if (outJSON.features[0].geometry.type==='Point') {
 			var outJSON = turf.within(outJSON,inJSON);
 		} else {
-			// turf.featureEach(outJSON, function (currentFeature, featureIndex) {
-			// 	if (turf.booleanOverlap(currentFeature,inJSON)==true) {
-			// 		console.log('intersects')
-			// 	}
-			// });
+			var features = [];
+			turf.featureEach(outJSON, function (currentFeature, featureIndex) {
+				if (turf.booleanIntersects(currentFeature,inJSON)==true) {
+					features.push(currentFeature)
+				}
+			});
+			var outJSON = turf.featureCollection(features);
 		}
 		
 	}
+	
 
 	// Update actual number of points
 	document.getElementById('point-number').innerHTML = outJSON.features.length;
 
 	// Export and Display on Map
 	exportAndDisplay(inJSON,outJSON)
-}
-
-function rotate_point(pointX, pointY, originX, originY, angle) {
-	angle = angle * Math.PI / 180.0;
-	return {
-		x: (Math.cos(angle) * (pointX-originX) - Math.sin(angle) * (pointY-originY)) + originX,
-		y: (Math.sin(angle) * (pointX-originX) + Math.cos(angle)* (pointY-originY)) + originY
-	};
 }
 	
 function displayOnMap(inJSON,outJSON) {
@@ -206,7 +186,6 @@ function systematicSample(inJSON,n,extent) {
 	var nX = parseInt(Math.round(Math.sqrt((n*dX)/dY),0));
 	var nY = parseInt(Math.round(Math.sqrt((n*dY)/dX),0));
 	var d = dX/(nX);
-	console.log(extent)
 
 	var xStart = extent[0]+(d*Math.random());
 	var yStart = extent[1]+(d*Math.random());
@@ -296,50 +275,47 @@ function systematicPoints(inJSON,n,bbox,mask) {
 	return features
 }
 
-function hexGrid(inJSON,n,bbox,mask) {
+function hexGrid(inJSON,n,bbox,mask,rot) {
 	var cellSide = getCellSide('grid');
 	var options = {
-		units: 'meters',
-		mask: mask
+		units: 'meters'
 	};
 
 	// Increase bbox size so grid covers all of AOI, Math.random() added to randomize start of grid
 	var bbox = turf.bbox(turf.buffer(turf.bboxPolygon(bbox),cellSide*2*(1+Math.random()),{units: 'meters'}))
 
-	var featues = turf.hexGrid(bbox, cellSide, options);
+	var features = turf.hexGrid(bbox, cellSide, options);
 
-	return featues
+	return features
 }
 
 function squareGrid(inJSON,n,bbox,mask) {
 	var cellSide = getCellSide('grid');
 	var options = {
-		units: 'meters',
-		mask: mask
+		units: 'meters'
 	};
 
 	// Increase bbox size so grid covers all of AOI, Math.random() added to randomize start of grid
 	var bbox = turf.bbox(turf.buffer(turf.bboxPolygon(bbox),cellSide*2*(1+Math.random()),{units: 'meters'}))
 
-	var featues = turf.squareGrid(bbox, cellSide, options);
+	var features = turf.squareGrid(bbox, cellSide, options);
 
-	return featues
+	return features
 }
 
 function triangleGrid(inJSON,n,bbox,mask) {
 	var cellSide = getCellSide('grid');
 	var options = {
 		units: 'meters',
-		mask: mask,
 		triangles: true
 	};
 
 	// Increase bbox size so grid covers all of AOI, Math.random() added to randomize start of grid
 	var bbox = turf.bbox(turf.buffer(turf.bboxPolygon(bbox),cellSide*2*(1+Math.random()),{units: 'meters'}))
 
-	var featues = turf.hexGrid(bbox, cellSide, options);
+	var features = turf.hexGrid(bbox, cellSide, options);
 
-	return featues
+	return features
 }
 
 function exportAndDisplay (inJSON,outJSON) {
