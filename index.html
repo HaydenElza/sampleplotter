@@ -23,13 +23,15 @@
 	<header class="lead"><img id="SP_gif" src="" alt="Logo" height="45px"><p>Sample Plotter</p></header>
 	
 	<div class="row">
-		<div class="col-md-12 col-lg-12 col-xl-4 pb-3">
-			
+		<!-- Form -->
+		<div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 pb-3">
+			<!-- Upload button -->
 			<div class="row border-bottom-0 rounded shadow-sm bg-white">
 				<div id="upload" class="col-3 p-0"></div>
 				<div class="col-9 p-3">geojson or zipped shapefile (WGS 84)</div>
 			</div>
 			<form action="upload" method="post" enctype="multipart/form-data" onchange="genPlots(geoJSON);">
+				<!-- Sample Type -->
 				<div class="row border rounded shadow-sm bg-white my-3">
 					<div class="col">
 						<div class="row bg-secondary text-white rounded-top">
@@ -57,7 +59,9 @@
 						</div>
 					</div>	
 				</div>
+
 				<div class="row my-3">
+					<!-- Desired Point Count -->
 					<div class="col-6 pl-0" style="padding-right:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
 							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Desired Point Count</div>
@@ -66,6 +70,7 @@
 							</div>
 						</div>
 					</div>
+					<!-- Actual Plot Count -->
 					<div class="col-6 pr-0" style="padding-left:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
 							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Actual Plot Count</div>
@@ -75,7 +80,9 @@
 						</div>
 					</div>
 				</div>
+
 				<div class="row my-3">
+					<!-- Grid cell size -->
 					<div class="col-6 pl-0" style="padding-right:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
 							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Grid Cell Side (meters)</div>
@@ -84,11 +91,12 @@
 							</div>
 						</div>
 					</div>
+					<!-- Plots as Polygons -->
 					<div class="col-6 pr-0" style="padding-left:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Plots as Polygons</div>
+							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active" type="button" data-toggle="collapse" data-target="#plots-as-polygons-box">Plots as Polygons</div>
 
-							<div class="row p-3">
+							<div id="plots-as-polygons-box" class="row p-3 collapse">
 								<input id="polygon-plots" class="mr-3" type="checkbox" name="polygon-plots" value="True"><label for="polygon-plots"> make plots polygons</label>
 
 								<div class="form-group">
@@ -110,7 +118,9 @@
 						</div>
 					</div>
 				</div>
+
 				<div class="row my-3">
+					<!-- Rotation -->
 					<div class="col-6 pl-0" style="padding-right:7.5px;">
 						<div class="col border rounded shadow-sm bg-white">
 							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Rotation (degrees)</div>
@@ -119,19 +129,24 @@
 							</div>
 						</div>
 					</div>
+					<!-- Check Topology -->
 					<div class="col-6 pr-0" style="padding-left:7.5px;">
 						<div class="col border rounded shadow-sm bg-white h-100 text-center form-heading checkbox" style="padding-top:15%;">
 							<input class="mr-3" type="checkbox" name="check-topology" value="True" checked="checked"><label for="check-topology"> Check Topology</label>
 						</div>
 					</div>
 				</div>
+
 				<div class="row">
+					<!-- Regenerate -->
 					<button type="button" class="btn btn-dark col-3 p-3 rounded shadow-sm" onclick="genPlots(geoJSON);" >Regenerate</button>
+					<!-- Download -->
 					<div id="save-as" class="ml-3 rounded shadow-sm"><a style="display:none;"></a></div>
 				</div>
 			</form>
 		</div>
-		<div class="col-md-12 col-lg-12 col-xl-8">
+		<!-- Map -->
+		<div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
 			<div id="map"></div>
 			<a id="help-btn" class="btn btn-secondary" href="https://github.com/HaydenElza/sampleplotter" target="_blank" role="button">Help</a>
 			<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#authors-note">Author's Note</button>
