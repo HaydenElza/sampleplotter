@@ -18,161 +18,174 @@
 
 </head>
 <body>
-	<a href="https://github.com/HaydenElza/plots"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
-	
-	<header class="lead"><img id="SP_gif" src="" alt="Logo" height="45px"><p>Sample Plotter</p></header>
-	
-	<div class="row">
-		<!-- Form -->
-		<div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 pb-3">
-			<!-- Upload button -->
-			<div class="row border-bottom-0 rounded shadow-sm bg-white">
-				<div id="upload" class="col-3 p-0"></div>
-				<div class="col-9 p-3">geojson or zipped shapefile (WGS 84)</div>
-			</div>
-			<form action="upload" method="post" enctype="multipart/form-data" onchange="genPlots(geoJSON);">
-				<!-- Sample Type -->
-				<div class="row border rounded shadow-sm bg-white my-3">
-					<div class="col">
-						<div class="row bg-secondary text-white rounded-top">
-							<div class="col form-heading p-2 pl-3 border-bottom">Sample Type</div>
-						</div>
-						
-						<div class="row text-center">
-							<div class="col-4 radio p-0"><input id="random" type="radio" name="sample_type" value="random_sample" required onclick="enableOptions('point','random')"><label for="random" class="mb-0 pb-2"><img class="w-100 p-2" src="img/random.png">random</label></div>
-							<div class="col-4 radio p-0"><input id="systematic" type="radio" name="sample_type" value="systematic_sample" required onclick="enableOptions('point','systematic')" checked="checked"><label for="systematic" class="mb-0 pb-2"><img class="w-100 p-2" src="img/systematic.png">systematic</label></div>
-							<div class="col-4 radio p-0"><input id="equidistant" type="radio" name="sample_type" value="equidistant_sample" required onclick="enableOptions('point','equidistant')"><label for="equidistant" class="mb-0 pb-2"><img class="w-100 p-2" src="img/equidistant.png">equidistant</label></div>
-						</div>
-						<div class="row text-center">
-							<div class="col-4 radio p-0">
-								<input id="hex" type="radio" name="sample_type" value="hex_grid" required onclick="enableOptions('grid','hex')">
-								<label for="hex" class="mb-0 pb-2"><img class="w-100 p-2" src="img/hex_grid.png">hex grid</label>
-							</div>
-							<div class="col-4 radio p-0">
-								<input id="square" type="radio" name="sample_type" value="square_grid" required onclick="enableOptions('grid','square')">
-								<label for="square" class="mb-0 pb-2"><img class="w-100 p-2" src="img/square_grid.png">square grid</label>
-							</div>
-							<div class="col-4 radio p-0">
-								<input id="triangle" type="radio" name="sample_type" value="triangle_grid" required onclick="enableOptions('grid','triangle')">
-								<label for="triangle" class="mb-0 pb-2"><img class="w-100 p-2" src="img/triangle_grid.png">triangle grid</label>
-							</div>
-						</div>
-					</div>	
-				</div>
-
-				<div class="row my-3">
-					<!-- Desired Point Count -->
-					<div class="col-6 pl-0" style="padding-right:7.5px;">
-						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Desired Point Count</div>
-							<div class="row p-3">
-								<input id="sample-number" class="form-control" type="number" name="sample-number" min="1" value="100" required>
-							</div>
-						</div>
+	<div class="container-fluid">
+		<div class="row">
+			<!-- Form -->
+			<div id="form" class="col-sm-12 col-md-6 col-lg-4 col-xl-4 px-3">
+				<div class="row justify-content-sm-center mt-4 mb-4">
+					<div class="col-sm-auto d-none d-sm-flex">
+						<img id="SP_gif" src="" alt="Logo" height="45px">
 					</div>
-					<!-- Actual Plot Count -->
-					<div class="col-6 pr-0" style="padding-left:7.5px;">
-						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Actual Plot Count</div>
-							<div class="row p-3">
-								<div id="point-number" class="col text-center" style="font-size: 1.6em;">50</div>
-							</div>
-						</div>
+					<div class="col-sm-auto">
+						<h1>SamplePlotter</h1>
 					</div>
 				</div>
-
-				<div class="row my-3">
-					<!-- Grid cell size -->
-					<div class="col-6 pl-0" style="padding-right:7.5px;">
-						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Grid Cell Side (meters)</div>
-							<div class="row p-3">
-								<input id="cell-side" class="form-control" type="number" name="cell-side" min="1" value="50" required>
+				<!-- Upload button -->
+				<div class="row border-bottom-0 rounded shadow-sm bg-white mx-0 my-3 p-0">
+					<div id="upload" class="col-3 pl-0" style="z-index: 0;"></div>
+					<div class="col-9 p-3">geojson or zipped shapefile (WGS 84)</div>
+				</div>
+				<form action="upload" method="post" enctype="multipart/form-data" onchange="genPlots(geoJSON);">
+					<!-- Sample Type -->
+					<div class="row my-3">
+						<div class="col-12">
+							<div class="col border rounded shadow-sm bg-white">
+								<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Sample Type</div>
+								
+								<div class="row text-center">
+									<div class="col-4 radio p-0"><input id="random" type="radio" name="sample_type" value="random_sample" required onclick="enableOptions('point','random')"><label for="random" class="mb-0 pb-2"><img class="w-100 p-2" src="img/random.png">random</label></div>
+									<div class="col-4 radio p-0"><input id="systematic" type="radio" name="sample_type" value="systematic_sample" required onclick="enableOptions('point','systematic')" checked="checked"><label for="systematic" class="mb-0 pb-2"><img class="w-100 p-2" src="img/systematic.png">systematic</label></div>
+									<div class="col-4 radio p-0"><input id="equidistant" type="radio" name="sample_type" value="equidistant_sample" required onclick="enableOptions('point','equidistant')"><label for="equidistant" class="mb-0 pb-2"><img class="w-100 p-2" src="img/equidistant.png">equidistant</label></div>
+								</div>
+								<div class="row text-center">
+									<div class="col-4 radio p-0">
+										<input id="hex" type="radio" name="sample_type" value="hex_grid" required onclick="enableOptions('grid','hex')">
+										<label for="hex" class="mb-0 pb-2"><img class="w-100 p-2" src="img/hex_grid.png">hex grid</label>
+									</div>
+									<div class="col-4 radio p-0">
+										<input id="square" type="radio" name="sample_type" value="square_grid" required onclick="enableOptions('grid','square')">
+										<label for="square" class="mb-0 pb-2"><img class="w-100 p-2" src="img/square_grid.png">square grid</label>
+									</div>
+									<div class="col-4 radio p-0">
+										<input id="triangle" type="radio" name="sample_type" value="triangle_grid" required onclick="enableOptions('grid','triangle')">
+										<label for="triangle" class="mb-0 pb-2"><img class="w-100 p-2" src="img/triangle_grid.png">triangle grid</label>
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
-					<!-- Plots as Polygons -->
-					<div class="col-6 pr-0" style="padding-left:7.5px;">
-						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active" type="button" data-toggle="collapse" data-target="#plots-as-polygons-box">Plots as Polygons</div>
-
-							<div id="plots-as-polygons-box" class="row p-3 collapse">
-								<input id="polygon-plots" class="mr-3" type="checkbox" name="polygon-plots" value="True"><label for="polygon-plots"> make plots polygons</label>
-
-								<div class="form-group">
-									<label for="radius">radius</label>
-									<input id="radius" class="form-control" type="number" name="radius" min="1" value="10" required>
-								</div>
-
-								<div class="form-group">
-									<label for="steps">steps</label>
-									<input id="steps" class="form-control" type="number" name="steps" min="1" value="64" required>
-								</div>
-
-								<div class="form-group">
-									<label for="poly-rot">polygon rotation</label>
-									<input id="poly-rot" class="form-control" type="number" name="poly-rot" min="-360" max="360" value="0" required>
-								</div>
 							
+					</div>
+
+					<div class="row my-3">
+						<!-- Desired Point Count -->
+						<div class="col-6" style="padding-right:7.5px;">
+							<div class="col border rounded shadow-sm bg-white">
+								<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Desired Point Count</div>
+								<div class="row p-3">
+									<input id="sample-number" class="form-control" type="number" name="sample-number" min="1" value="100" required>
+								</div>
+							</div>
+						</div>
+						<!-- Actual Plot Count -->
+						<div class="col-6" style="padding-left:7.5px;">
+							<div class="col border rounded shadow-sm bg-white">
+								<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Actual Plot Count</div>
+								<div class="row p-3">
+									<div id="point-number" class="col text-center" style="font-size: 1.6em;">50</div>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				<div class="row my-3">
-					<!-- Rotation -->
-					<div class="col-6 pl-0" style="padding-right:7.5px;">
-						<div class="col border rounded shadow-sm bg-white">
-							<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Rotation (degrees)</div>
-							<div class="row p-3">
-								<input id="rotation-input" class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
+					<div class="row my-3">
+						<!-- Grid cell size -->
+						<div class="col-6" style="padding-right:7.5px;">
+							<div class="col border rounded shadow-sm bg-white">
+								<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3">Grid Cell Side (meters)</div>
+								<div class="row p-3">
+									<input id="cell-side" class="form-control" type="number" name="cell-side" min="1" value="50" required>
+								</div>
+							</div>
+						</div>
+						<!-- Plots as Polygons -->
+						<div class="col-6" style="padding-left:7.5px;">
+							<div class="col border rounded shadow-sm bg-white">
+								<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active" type="button" data-toggle="collapse" data-target="#plots-as-polygons-box">Plots as Polygons</div>
+
+								<div id="plots-as-polygons-box" class="row p-3 collapse">
+									<input id="polygon-plots" class="mr-3" type="checkbox" name="polygon-plots" value="True"><label for="polygon-plots"> make plots polygons</label>
+
+									<div class="form-group">
+										<label for="radius">radius</label>
+										<input id="radius" class="form-control" type="number" name="radius" min="1" value="10" required>
+									</div>
+
+									<div class="form-group">
+										<label for="steps">steps</label>
+										<input id="steps" class="form-control" type="number" name="steps" min="1" value="64" required>
+									</div>
+
+									<div class="form-group">
+										<label for="poly-rot">polygon rotation</label>
+										<input id="poly-rot" class="form-control" type="number" name="poly-rot" min="-360" max="360" value="0" required>
+									</div>
+								
+								</div>
 							</div>
 						</div>
 					</div>
-					<!-- Check Topology -->
-					<div class="col-6 pr-0" style="padding-left:7.5px;">
-						<div class="col border rounded shadow-sm bg-white h-100 text-center form-heading checkbox" style="padding-top:15%;">
-							<input class="mr-3" type="checkbox" name="check-topology" value="True" checked="checked"><label for="check-topology"> Check Topology</label>
+
+					<div class="row my-3">
+						<!-- Rotation -->
+						<div class="col-6" style="padding-right:7.5px;">
+							<div class="col border rounded shadow-sm bg-white">
+								<div class="row form-heading bg-secondary text-white rounded-top p-2 pl-3 active">Rotation (degrees)</div>
+								<div class="row p-3">
+									<input id="rotation-input" class="form-control" type="number" name="rotation" min="-360" max="360" value="0">
+								</div>
+							</div>
+						</div>
+						<!-- Check Topology -->
+						<div class="col-6" style="padding-left:7.5px;">
+							<div class="col border rounded shadow-sm bg-white h-100 text-center form-heading checkbox" style="padding-top:15%;">
+								<input class="mr-3" type="checkbox" name="check-topology" value="True" checked="checked"><label for="check-topology"> Check Topology</label>
+							</div>
 						</div>
 					</div>
-				</div>
 
-				<div class="row">
-					<!-- Regenerate -->
-					<button type="button" class="btn btn-dark col-3 p-3 rounded shadow-sm" onclick="genPlots(geoJSON);" >Regenerate</button>
-					<!-- Download -->
-					<div id="save-as" class="ml-3 rounded shadow-sm"><a style="display:none;"></a></div>
-				</div>
-			</form>
-		</div>
-		<!-- Map -->
-		<div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
-			<div id="map"></div>
-			<a id="help-btn" class="btn btn-secondary" href="https://github.com/HaydenElza/sampleplotter" target="_blank" role="button">Help</a>
-			<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#authors-note">Author's Note</button>
-
-			<!-- Author's Note -->
-			<div class="modal fade" id="authors-note" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalCenterTitle">Author's Note</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
+					<div class="row my-3">
+						<div class="col-auto">
+							<!-- Regenerate -->
+							<button type="button" class="btn btn-dark p-3 rounded shadow-sm" onclick="genPlots(geoJSON);" >Regenerate</button>
 						</div>
-						<div class="modal-body">
-							<p>Sample Plotter is a tool designed to simplify the process of generating plots for plot sampling.</p>
-							<p>Plot sampling is used in forestry, ecology, and other environmental sciences with varying methods such as random plots, regular grid, or equidistant grid depending on the application.</p>
-							<p>Sample Plotter is free and open source, no need for ArcGIS or other software—and since data is processed locally via JavaScript, your data stays private.</p>
-							<p>I hope you enjoy it. – Hayden</p>
+						<div class="col-auto pl-0">
+							<!-- Download -->
+							<div id="save-as" class="rounded shadow-sm"><a style="display:none;"></a></div>
 						</div>
-						<div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div>
 					</div>
-				</div>
+				</form>
 			</div>
-			<!--<input class="btn btn-secondary" type="button" value="Test Box" onclick="testData1()" />
-			<input class="btn btn-secondary" type="button" value="Test Shape" onclick="testData2()" />-->
+			<!-- Map -->
+			<div class="col-sm-12 col-md-6 col-lg-8 col-xl-8 ml-auto p-0" style="position:fixed;right:0;">
+				<div id="map"></div>
+				<!-- <div class="row" style="position: fixed;right: 1em;bottom: 2em;">
+					<a id="help-btn" class="btn btn-secondary" href="https://github.com/HaydenElza/sampleplotter" target="_blank" role="button">Help</a>
+					<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#authors-note">Author's Note</button> -->
+
+					<!-- Author's Note -->
+					<!-- <div class="modal fade" id="authors-note" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalCenterTitle">Author's Note</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Sample Plotter is a tool designed to simplify the process of generating plots for plot sampling.</p>
+									<p>Plot sampling is used in forestry, ecology, and other environmental sciences with varying methods such as random plots, regular grid, or equidistant grid depending on the application.</p>
+									<p>Sample Plotter is free and open source, no need for ArcGIS or other software—and since data is processed locally via JavaScript, your data stays private.</p>
+									<p>I hope you enjoy it. – Hayden</p>
+								</div>
+								<div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div>
+							</div>
+						</div>
+					</div> -->
+					<!--<input class="btn btn-secondary" type="button" value="Test Box" onclick="testData1()" />
+					<input class="btn btn-secondary" type="button" value="Test Shape" onclick="testData2()" />-->
+				<!-- </div> -->
+			</div>
 		</div>
 	</div>
 
