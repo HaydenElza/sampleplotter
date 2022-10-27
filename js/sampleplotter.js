@@ -210,7 +210,7 @@ function systematicSample(inJSON,n,extent) {
 	var xStart = extent[0]+(d*Math.random());
 	var yStart = extent[1]+(d*Math.random());
 	var fid = 0;
-
+	
 	for (var u in range(nX)) {
 		var x = xStart + (u*d);
 		for (var v in range(nY)) {

@@ -3,3 +3,5 @@ exact_snippet.py
 plots.qgs*
 *.pyc
 _site/
+*.DS_Store
+*prepros.config
