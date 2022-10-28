@@ -3,6 +3,28 @@ function range(k) {
 	return Array.apply(null, Array(k)).map(function (_, i) {return i;})
 }
 
+// Read geojson into turf feature collection
+function readGeoJSON(json) {
+	
+	// Create empty array to store features
+	featureArray = [];
+
+	// For each feature
+	for (var i=0; i < json.features.length; i++) {
+
+        // Point
+		if (json.features[i].geometry.type == "Point") {
+			featureArray.push(turf.point(json.features[i].geometry.coordinates));
+		} 
+		// Multipoint
+		else if (json.features[i].geometry.type == "MultiPoint") {
+			featureArray.push(turf.multiPoint(json.features[i].geometry.coordinates));
+		}
+	}
+
+	return turf.featureCollection(featureArray)
+}
+
 function enableOptions(pointGrid,type) {
 	function options(enableDisable, ids) {
 		if (enableDisable=='enable') {
@@ -49,6 +71,12 @@ function getCellSide(pointGrid, n, bbox) {
 }
 
 function genPlots(inJSON) {
+
+	// If inJSON is not polygon
+	if (!["Polygon","MultiPolygon",""].includes(inJSON.features[0].geometry.type)) {
+		inJSON = turf.concave(turf.flatten(readGeoJSON(inJSON)));
+	}
+
 	var n = Number(document.getElementById("sample-number").value);
 	var check_topology = $('input[name="check-topology"]:checked').val();
 	var point_as_poly = $('input[name="polygon-plots"]:checked').val();
@@ -60,6 +88,7 @@ function genPlots(inJSON) {
 
 	// Adjust n for topology check
 	if (check_topology) {var n = parseInt(n * (turf.area(turf.bboxPolygon(turf.bbox(inJSON)))/turf.area(inJSON)) );}
+
 	// Adjust n for rotation
 	if (rot != 0) {
 		var c = Math.sqrt(Math.pow(Math.abs(extent[0]-extent[2]),2)+Math.pow(Math.abs(extent[1]-extent[3]),2));
@@ -143,7 +172,7 @@ function genPlots(inJSON) {
 	exportAndDisplay(inJSON,outJSON)
 }
 	
-function displayOnMap(inJSON,outJSON) {
+function displayOnMap(outJSON) {
 	if (typeof geojsonLayer != 'undefined'){ m.removeLayer(geojsonLayer); };
 
 	if (outJSON.features[0].geometry.type==='Point') {
@@ -350,5 +379,5 @@ function exportAndDisplay (inJSON,outJSON) {
 	a.className   = "btn btn-dark p-3"
 
 	document.getElementById('save-as').replaceChild(a,document.getElementById('save-as').firstChild);
-	displayOnMap(inJSON,outJSON)
+	displayOnMap(outJSON)
 }

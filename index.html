@@ -196,7 +196,7 @@
 	<script src="js/leaflet.hash.js"></script>
 
 	<!-- <script src="js/turf-5.1.6.min.js" charset="utf-8"></script> -->
-	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+	<script src='https://unpkg.com/@turf/turf@6.5.0/turf.min.js'></script>
 	<!-- <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script> -->
 
 	<script src="js/require.js"></script>
@@ -215,7 +215,7 @@
 			$("#help-btn").click(function(){
 				$("#help").modal({backdrop: true});
 			});
-			$("#map").append('<div class="leaflet-control-container"><div id="load-data-msg" class="leaflet-top bg-dark text-white">Upload your own data on the left, or drag and drop on map (WGS 84)</div></div>')
+			$("#map.leaflet-control-container").append('<div id="load-data-msg" class="leaflet-top bg-dark text-white">Upload your own data on the left, or drag and drop on map (WGS 84)</div>')
 		});
 
 		// pre-load example
