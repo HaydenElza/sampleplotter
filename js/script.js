@@ -87,7 +87,7 @@ require(['catiline'], function(cw) {
         uploadButton.style.border = "#88ce98";
         uploadButton.innerHTML = "upload complete";
         document.getElementById("input").removeAttribute("type");
-        document.getElementById("load-data-msg").style.display = "none";
+        // document.getElementById("load-data-msg").style.display = "none";
 
         if (file.name.slice(-3) === 'zip') {
             return handleZipFile(file);
