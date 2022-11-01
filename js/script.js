@@ -147,6 +147,22 @@ require(['catiline'], function(cw) {
             var bboxArea = turf.area(turf.bboxPolygon(bbox));
             document.getElementById("cell-side").value = Math.round(Math.sqrt(bboxArea)/20);
 
+            // If uploaded data are points
+            if (!["Polygon","MultiPolygon",""].includes(geoJSON.features[0].geometry.type)) {
+
+                // Create concave hull containing points
+                hull = turf.featureCollection([turf.concave(turf.flatten(readGeoJSON(geoJSON)))]);
+        
+                // Add hull polygon to map
+                var polygonStyle = {
+                    "color": "#ffffff",
+                    "weight": 3,
+                    "opacity": 0.01
+                };
+                hullLayer = L.geoJson([hull], {style: polygonStyle});
+                hullLayer.addTo(m);
+            }
+
         });
         worker.on('error', function(e) {
             console.warn(e);
