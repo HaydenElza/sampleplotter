@@ -142,6 +142,11 @@ require(['catiline'], function(cw) {
             lc.addOverlay(L.geoJson(e[0], options).addTo(m), e[1]);
             m.fitBounds(L.geoJson(e[0], options).getBounds());
 
+            // Adjust cell side for scale of data
+            var bbox = turf.bbox(geoJSON);
+            var bboxArea = turf.area(turf.bboxPolygon(bbox));
+            document.getElementById("cell-side").value = Math.round(Math.sqrt(bboxArea)/20);
+
         });
         worker.on('error', function(e) {
             console.warn(e);
