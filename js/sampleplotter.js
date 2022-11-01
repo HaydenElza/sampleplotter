@@ -74,7 +74,8 @@ function genPlots(inJSON) {
 
 	// If inJSON is not polygon
 	if (!["Polygon","MultiPolygon",""].includes(inJSON.features[0].geometry.type)) {
-		inJSON = turf.concave(turf.flatten(readGeoJSON(inJSON)));
+		// Create concave hull containing points
+		inJSON = turf.featureCollection([turf.concave(turf.flatten(readGeoJSON(inJSON)))]);
 	}
 
 	var n = Number(document.getElementById("sample-number").value);
@@ -169,7 +170,7 @@ function genPlots(inJSON) {
 	document.getElementById('point-number').innerHTML = outJSON.features.length;
 
 	// Export and Display on Map
-	exportAndDisplay(inJSON,outJSON)
+	exportAndDisplay(outJSON)
 }
 	
 function displayOnMap(outJSON) {
@@ -367,7 +368,7 @@ function triangleGrid(inJSON,n,bbox,mask) {
 	return features
 }
 
-function exportAndDisplay (inJSON,outJSON) {
+function exportAndDisplay (outJSON) {
 	var json = JSON.stringify(outJSON);
 	var blob = new Blob([json], {type: "application/json"});
 	var url  = URL.createObjectURL(blob)
